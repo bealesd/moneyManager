@@ -9,7 +9,7 @@ namespace MoneyApp.Repos
     public interface IAccountRepo
     {
         void CreateAccount(string accountName, Guid userGuid);
-        Account GetAccount(string accountName);
+        Account GetAccount(string accountName);//
         void Load();
         void Save();
     }
