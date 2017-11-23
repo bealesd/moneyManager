@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MoneyApp.IO;
 using MoneyApp.Repos;
 
 namespace MoneyApp
@@ -15,13 +16,20 @@ namespace MoneyApp
     {
         public static void Main(string[] args)
         {
+            //private string usersPath =
+            //        Path.GetDirectoryName(
+            //            Path.GetDirectoryName(
+            //                Path.GetDirectoryName(
+            //                    System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase)));
 
-            UserRepo userRepo = new UserRepo();
-            userRepo.AddUser("David Beales");
+            //UserRepo userRepo = new UserRepo(new JsonReaderWriter(),
+            //                                     @"C:\Users\dave\Desktop\Users.txt");
 
-            System.Threading.Thread.Sleep(2000);
+            //userRepo.AddUser("David Beales");
 
-            //BuildWebHost(args).Run();
+            //System.Threading.Thread.Sleep(2000);
+
+            BuildWebHost(args).Run();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

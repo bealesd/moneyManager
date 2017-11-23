@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MoneyApp.IO;
 using MoneyApp.Models;
 using Newtonsoft.Json;
 
@@ -11,28 +12,25 @@ namespace MoneyApp.Repos
     public class UserRepo : IUserRepo
     {
         private List<User> _users = new List<User>();
-        private string usersPath = @"C:\Users\dave\Desktop\Users.txt";
+        private IReaderWriter _readerWriter;
+        private string _filePath;
 
-        public UserRepo()
+        public UserRepo(IReaderWriter readerWriter, string filePath)
         {
-            Load();
+            _readerWriter = readerWriter;
+            _filePath = filePath;
         }
+
         public void Save()
         {
-            string jsonUsers = JsonConvert.SerializeObject(_users.ToArray());
-            System.IO.File.WriteAllText(usersPath, jsonUsers);
+            _readerWriter.WriteEnumerable(_filePath, _users);
         }
+
         public void Load()
         {
-            if (System.IO.File.Exists(usersPath))
-            {
-                string jsonUsers = File.ReadAllText(usersPath);
-                _users = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
-            }
-        }
-        public void AddAccountToUser(Guid userGuid, Guid accountGuid)
-        {
-            throw new NotImplementedException();
+            var loadedUsers = _readerWriter.ReadEnumerable<User>(_filePath);
+            if (loadedUsers != null)
+                _users = loadedUsers.ToList();
         }
 
         public void AddUser(string username)
@@ -41,7 +39,7 @@ namespace MoneyApp.Repos
             {
                 UserGuid = Guid.NewGuid(),
                 Username = username,
-                AccountGuid = new List<Guid>()
+                //AccountGuid = new List<Guid>()
             };
             _users.Add(newUser);
 
@@ -53,9 +51,10 @@ namespace MoneyApp.Repos
             return _users;
         }
 
-        public User GetUser(Guid userGuid)
+        public User GetUser(string username)
         {
-            User user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
+            User user = _users.FirstOrDefault(u => String.Equals(u.Username, username,
+                                                    StringComparison.InvariantCultureIgnoreCase));
             return user;
         }
     }
