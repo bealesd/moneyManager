@@ -8,10 +8,10 @@ using MoneyApp.Models;
 using MoneyApp.Repos;
 using NUnit.Framework;
 
-namespace UnitTest
+namespace UnitTest.IntegrationTests
 {
     [TestFixture]
-    public class IntergrationTests
+    public class UserRepoTest
     {
         private IUserRepo _userRepo;
         private IAccountRepo _accountRepo;

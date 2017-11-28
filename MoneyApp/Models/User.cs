@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MoneyApp.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MoneyApp.Models
 {
-    public class User
+    public class User : IUser
     {
         public Guid UserGuid { get; set; }
         public string Username { get; set; }
