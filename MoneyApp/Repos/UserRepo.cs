@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MoneyApp.Interfaces;
 using MoneyApp.IO;
 using MoneyApp.Models;
 using Newtonsoft.Json;
@@ -46,16 +47,18 @@ namespace MoneyApp.Repos
             Save();
         }
 
-        public IEnumerable<User> GetAllUsers()
+        public IEnumerable<IUser> GetAllUsers()
         {
             return _users;
         }
 
-        public User GetUser(string username)
+        public Guid GetUser(string username)
         {
             User user = _users.FirstOrDefault(u => String.Equals(u.Username, username,
                                                     StringComparison.InvariantCultureIgnoreCase));
-            return user;
+            
+            // could make a readonly User Object
+            return user?.UserGuid ?? Guid.Empty;
         }
     }
 }

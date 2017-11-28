@@ -17,8 +17,6 @@ namespace MoneyApp.Controllers
 
         public UserController(IUserRepo userRepo, IAccountRepo accountRepo)
         {
-            // interface for querying users using IUserRepo
-            // IUserRepo will be implemented by UserJsonStore
             _userRepo = userRepo;
             _userRepo.Load();
             _accountRepo = accountRepo;
@@ -36,14 +34,16 @@ namespace MoneyApp.Controllers
         [HttpGet("{username}")]
         public IActionResult Get(string username)
         {
-            if (username == null)
+            if (username == String.Empty)
             {
                 return BadRequest();
             }
 
-            User user = _userRepo.GetUser(username);
+            Guid userGuid = _userRepo.GetUser(username);
+            if (userGuid == Guid.Empty)
+                return BadRequest();
 
-            return new ObjectResult(user);
+            return new ObjectResult(userGuid);
         }
 
         // POST api/user
@@ -63,11 +63,9 @@ namespace MoneyApp.Controllers
         [HttpPost("{username}/{accountName}")]
         public IActionResult CreateMoneyAccount(string username, string accountName)
         {
-            User user = _userRepo.GetUser(username);
-            if (user == null)
+            Guid userGuid = _userRepo.GetUser(username);
+            if (userGuid == Guid.Empty)
                 return BadRequest();
-
-            Guid userGuid = user.UserGuid;
 
             if (_accountRepo.GetAccount(accountName) != null)
             {
@@ -81,10 +79,9 @@ namespace MoneyApp.Controllers
         [HttpGet("{username}/{accountName}")]
         public IActionResult GetMoneyAccount(string username, string accountName)
         {
-            User user = _userRepo.GetUser(username);
-            if (user == null)
+            Guid userGuid = _userRepo.GetUser(username);
+            if (userGuid == Guid.Empty)
                 return BadRequest();
-            Guid userGuid = user.UserGuid;
 
             Account account = _accountRepo.GetAccount(accountName);
             if (account == null)
