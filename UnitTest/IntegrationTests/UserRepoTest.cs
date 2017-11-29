@@ -26,7 +26,8 @@ namespace UnitTest.IntegrationTests
             var username = "David Beales";
             _userRepo.AddUser(username);
 
-            User user = _userRepo.GetUser(username);
+            var users = _userRepo.GetAllUsers().ToList();
+            var user = users.FirstOrDefault(u => u.Username == username);
 
             Assert.AreEqual(username, user.Username);
         }
@@ -36,19 +37,18 @@ namespace UnitTest.IntegrationTests
         {
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
 
-            var username1 = "David Beales";
-            _userRepo.AddUser(username1);
+            var david = "David Beales";
+            _userRepo.AddUser(david);
 
-            var username2 = "Bob Marley";
-            _userRepo.AddUser(username2);
+            var bob = "Bob Marley";
+            _userRepo.AddUser(bob);
 
-            User user1 = _userRepo.GetUser(username1);
-            User user2 = _userRepo.GetUser(username2);
+            var users = _userRepo.GetAllUsers().ToList();
+            var userDavid = users.FirstOrDefault(u => u.Username == david);
+            var userBob = users.FirstOrDefault(u => u.Username == bob);
 
-            IEnumerable<User> users = _userRepo.GetAllUsers();
-
-            Assert.AreEqual(username1, user1.Username);
-            Assert.AreEqual(username2, user2.Username);
+            Assert.AreEqual(david, userDavid.Username);
+            Assert.AreEqual(bob, userBob.Username);
             Assert.AreEqual(2, users.Count());
         }
 
@@ -61,11 +61,13 @@ namespace UnitTest.IntegrationTests
             var david = "David Beales";
             _userRepo.AddUser(david);
 
-            User davidUser = _userRepo.GetUser(david);
-            _accountRepo.CreateAccount("daveAccount", davidUser.UserGuid);
+            var users = _userRepo.GetAllUsers().ToList();
+            var userDavid = users.FirstOrDefault(u => u.Username == david);
+
+            _accountRepo.CreateAccount("daveAccount", userDavid.UserGuid);
             var account = _accountRepo.GetAccount("daveAccount");
             
-            Assert.AreEqual(account.UserGuid, davidUser.UserGuid);
+            Assert.AreEqual(account.UserGuid, userDavid.UserGuid);
         }
 
         [Test]
@@ -74,19 +76,20 @@ namespace UnitTest.IntegrationTests
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
             _accountRepo = new AccountRepo(new JsonReaderWriter(), accountPath);
 
-            var username1 = "David Beales";
-            _userRepo.AddUser(username1);
+            var david = "David Beales";
+            _userRepo.AddUser(david);
 
-            User user1 = _userRepo.GetUser(username1);
+            var users = _userRepo.GetAllUsers().ToList();
+            var userDavid = users.FirstOrDefault(u => u.Username == david);
 
-            _accountRepo.CreateAccount("davidAccount", user1.UserGuid);
-            _accountRepo.CreateAccount("davidAccount2", user1.UserGuid);
+            _accountRepo.CreateAccount("davidAccount", userDavid.UserGuid);
+            _accountRepo.CreateAccount("davidAccount2", userDavid.UserGuid);
 
-            var account1 =_accountRepo.GetAccount("davidAccount");
-            var account2 = _accountRepo.GetAccount("davidAccount2");
+            var davidAccount = _accountRepo.GetAccount("davidAccount");
+            var davidAccount2 = _accountRepo.GetAccount("davidAccount2");
 
-            Assert.AreEqual("davidAccount", account1.AccountName);
-            Assert.AreEqual("davidAccount2", account2.AccountName);
+            Assert.AreEqual("davidAccount", davidAccount.AccountName);
+            Assert.AreEqual("davidAccount2", davidAccount2.AccountName);
         }
     }
 }

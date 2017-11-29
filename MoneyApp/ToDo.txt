@@ -1,5 +1,4 @@
-﻿Add IUser interface.
-User Iuser interface instead of User in IuserRepo
-Add unit tests for controller
+﻿Add unit tests for controller
 Add unit tests for the repos
 Update the userRepoTests in integration testing to use a teardown and setup
+Get rid of filePath from user repo, use reflection to determine path instead

@@ -12,7 +12,6 @@ namespace MoneyApp.Repos
         IEnumerable<IUser> GetAllUsers();
         Guid GetUser(string username);
         void AddUser(string username);
-        //void AddAccountToUser(Guid userGuid, Guid accountGuid);
         void Save();
         void Load();
     }
