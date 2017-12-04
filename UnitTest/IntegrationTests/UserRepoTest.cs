@@ -16,7 +16,7 @@ namespace UnitTest.IntegrationTests
         private string accountPath = new MoneyApp.Helper.Helper().TempPath("AccountTest.txt");
 
         [Test]
-        public void Test_Add_New_User()
+        public void Add_New_User()
         {
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
 
@@ -30,7 +30,7 @@ namespace UnitTest.IntegrationTests
         }
 
         [Test]
-        public void Test_Add_Two_New_Users()
+        public void Add_Two_New_Users()
         {
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
 
@@ -50,7 +50,7 @@ namespace UnitTest.IntegrationTests
         }
 
         [Test]
-        public void Test_Add_Two_Users_And_Account_To_A_User()
+        public void Add_Two_Users_And_Account_To_A_User()
         {
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
             _accountRepo = new AccountRepo(new JsonReaderWriter(), accountPath);
@@ -68,7 +68,7 @@ namespace UnitTest.IntegrationTests
         }
 
         [Test]
-        public void Test_Add_Two_Accounts_To_A_User()
+        public void Add_Two_Accounts_To_A_User()
         {
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
             _accountRepo = new AccountRepo(new JsonReaderWriter(), accountPath);
@@ -88,5 +88,7 @@ namespace UnitTest.IntegrationTests
             Assert.AreEqual("davidAccount", davidAccount.AccountName);
             Assert.AreEqual("davidAccount2", davidAccount2.AccountName);
         }
+
+
     }
 }

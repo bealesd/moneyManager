@@ -71,5 +71,26 @@ namespace UnitTest.ControllerTests
             Assert.That("get", Is.EqualTo(result.ActionName.ToLower(CultureInfo.InvariantCulture)));
             Assert.That("dave", Is.EqualTo(result.RouteValues["username"]));
         }
+
+        [Test]
+        public void Add_An_Account_To_A_User_Returns_A_New_Account()
+        {
+            var username = "dave";
+            var daveGuid = Guid.NewGuid();
+            var account = new Account(){AccountGuid = Guid.NewGuid(), AccountName = "isa", UserGuid = daveGuid};
+
+            var fakeUserRepo = A.Fake<IUserRepo>();
+            var fakeAccountRepo = A.Fake<IAccountRepo>();
+
+            A.CallTo(() => fakeAccountRepo.GetAccount(username)).Returns(account);
+            A.CallTo(() => fakeUserRepo.GetUser(username)).Returns(daveGuid);
+
+            var controller = new UserController(fakeUserRepo, fakeAccountRepo);
+            var result = controller.CreateMoneyAccount(username, account.AccountName) as ObjectResult;
+            var resultAccount = result.Value as Account;
+
+            Assert.That(daveGuid, Is.EqualTo(resultAccount.AccountGuid));
+            Assert.That(account.AccountName, Is.EqualTo(resultAccount.AccountName));
+        }
     }
 }
