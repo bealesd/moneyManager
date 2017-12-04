@@ -12,7 +12,7 @@ namespace MoneyApp.IO
     {
         public IEnumerable<T> ReadEnumerable<T>(string path)
         {
-            if (System.IO.File.Exists(path))
+            if (File.Exists(path))
             {
                 string jsonText = File.ReadAllText(path);
                 IEnumerable<T> enumerable = JsonConvert.DeserializeObject<IEnumerable<T>>(jsonText);
@@ -25,7 +25,7 @@ namespace MoneyApp.IO
         {
             string jsonUsers = JsonConvert.SerializeObject(enumerable.ToArray());
 
-            System.IO.File.WriteAllText(path, jsonUsers);
+            File.WriteAllText(path, jsonUsers);
         }
     }
 }

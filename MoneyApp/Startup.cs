@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MoneyApp.IO;
 using MoneyApp.Repos;
+using MoneyApp.Helper;
 
 namespace MoneyApp
 {
@@ -26,11 +29,12 @@ namespace MoneyApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            
             services.AddSingleton<IUserRepo>(new UserRepo(new JsonReaderWriter(),
-                                                @"C:\Users\dave\Desktop\Users.txt"));
+                                                 new Helper.Helper().TempPath("users.txt")));
 
             services.AddSingleton<IAccountRepo>(new AccountRepo(new JsonReaderWriter(),
-                                                 @"C:\Users\dave\Desktop\Accounts.txt"));
+                                                     new Helper.Helper().TempPath("account.txt")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

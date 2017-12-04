@@ -45,6 +45,7 @@ namespace MoneyApp.Repos
             _users.Add(newUser);
 
             Save();
+            Load();
         }
 
         public IEnumerable<IUser> GetAllUsers()

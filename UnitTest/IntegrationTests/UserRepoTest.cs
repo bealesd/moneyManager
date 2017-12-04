@@ -1,8 +1,5 @@
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using MoneyApp;
 using MoneyApp.IO;
 using MoneyApp.Models;
 using MoneyApp.Repos;
@@ -15,8 +12,8 @@ namespace UnitTest.IntegrationTests
     {
         private IUserRepo _userRepo;
         private IAccountRepo _accountRepo;
-        private string userPath = @"C:\Users\dave\Desktop\UsersTest.txt";
-        private string accountPath = @"C:\Users\dave\Desktop\AccountTest.txt";
+        private string userPath = new MoneyApp.Helper.Helper().TempPath("UsersTest.txt");
+        private string accountPath = new MoneyApp.Helper.Helper().TempPath("AccountTest.txt");
 
         [Test]
         public void Test_Add_New_User()

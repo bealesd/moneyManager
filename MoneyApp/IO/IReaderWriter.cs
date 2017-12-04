@@ -6,6 +6,5 @@ namespace MoneyApp.IO
     {
         IEnumerable<T> ReadEnumerable<T>(string path);
         void WriteEnumerable<T>(string path, IEnumerable<T> enumerable);
-
     }
 }
