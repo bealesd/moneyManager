@@ -10,6 +10,5 @@ namespace MoneyApp.Models
     {
         public string AccountName { get; set; }
         public Guid AccountGuid { get; set; }
-        public Guid UserGuid { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MoneyApp.Helper;
 using MoneyApp.Interfaces;
 using MoneyApp.IO;
 using MoneyApp.Models;
@@ -20,6 +21,7 @@ namespace MoneyApp.Repos
         {
             _readerWriter = readerWriter;
             _filePath = filePath;
+            Load();
         }
 
         public void Save()
@@ -34,18 +36,33 @@ namespace MoneyApp.Repos
                 _users = loadedUsers.ToList();
         }
 
-        public void AddUser(string username)
+        public bool AddUser(string username)
         {
+            if (_users.Exists(u => u.Username == username) || !username.ValidUsername())
+            {
+                return false;
+            }
+
             var newUser = new User()
             {
                 UserGuid = Guid.NewGuid(),
                 Username = username,
-                //AccountGuid = new List<Guid>()
+                AccountGuid = new List<Guid>()
             };
             _users.Add(newUser);
-
             Save();
-            Load();
+            return true;
+        }
+
+        public void AddAccount(string username, Guid accountGuid)
+        {
+            var user = _users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+            {
+                return;
+            }
+            user.AccountGuid.Add(accountGuid);
+            Save();
         }
 
         public IEnumerable<IUser> GetAllUsers()
@@ -53,13 +70,16 @@ namespace MoneyApp.Repos
             return _users;
         }
 
-        public Guid GetUser(string username)
+        public User GetUser(string username)
         {
             User user = _users.FirstOrDefault(u => String.Equals(u.Username, username,
                                                     StringComparison.InvariantCultureIgnoreCase));
-            
-            // could make a readonly User Object
-            return user?.UserGuid ?? Guid.Empty;
+            return user;
+        }
+
+        public bool DeleteUser()
+        {
+            return true;
         }
     }
 }

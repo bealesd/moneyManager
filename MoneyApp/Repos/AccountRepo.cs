@@ -17,6 +17,7 @@ namespace MoneyApp.Repos
         {
             _readerWriter = readerWriter;
             _filePath = filePath;
+            Load();
         }
         public void Save()
         {
@@ -29,22 +30,21 @@ namespace MoneyApp.Repos
             if (currentAccounts != null)
                 _accounts = currentAccounts.ToList();
         }
-        public void CreateAccount(string accountName, Guid userGuid)
+        public Guid CreateAccount(string accountName)
         {
             var account = new Account()
             {
                 AccountGuid = Guid.NewGuid(),
                 AccountName = accountName,
-                UserGuid = userGuid
             };
             _accounts.Add(account);
-
             Save();
+            return account.AccountGuid;
         }
 
-        public Account GetAccount(string accountName)
+        public Account GetAccount(Guid accountGuid)
         {
-            var account = _accounts.FirstOrDefault(a => a.AccountName == accountName);
+            var account = _accounts.FirstOrDefault(a => a.AccountGuid == accountGuid);
             return account;
         }
     }

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using MoneyApp.IO;
 using MoneyApp.Repos;
 using MoneyApp.Helper;
+using MoneyApp.Interfaces;
 
 namespace MoneyApp
 {
@@ -29,12 +30,18 @@ namespace MoneyApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            
-            services.AddSingleton<IUserRepo>(new UserRepo(new JsonReaderWriter(),
-                                                 new Helper.Helper().TempPath("users.txt")));
 
-            services.AddSingleton<IAccountRepo>(new AccountRepo(new JsonReaderWriter(),
-                                                     new Helper.Helper().TempPath("account.txt")));
+            //services.AddSingleton<IUserRepo>(new UserRepo(new JsonReaderWriter(),
+            //                                     new Helper.Helper().TempPath("users.txt")));
+
+            //services.AddSingleton<IAccountRepo>(new AccountRepo(new JsonReaderWriter(),
+            //                                         new Helper.Helper().TempPath("account.txt")));
+
+            services.AddSingleton<IAdapterRepo>(new AdapterRepo
+                                                    (
+                                                        new UserRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("users.txt")), 
+                                                        new AccountRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("account.txt"))
+                                                    ));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

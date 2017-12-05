@@ -8,8 +8,8 @@ namespace MoneyApp.Repos
 {
     public interface IAccountRepo
     {
-        void CreateAccount(string accountName, Guid userGuid);
-        Account GetAccount(string accountName);//
+        Guid CreateAccount(string accountName);
+        Account GetAccount(Guid accountGuid);
         void Load();
         void Save();
     }

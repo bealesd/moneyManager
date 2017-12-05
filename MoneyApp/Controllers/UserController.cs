@@ -4,6 +4,8 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
+using MoneyApp.Interfaces;
 using MoneyApp.Models;
 using MoneyApp.Repos;
 
@@ -12,82 +14,75 @@ namespace MoneyApp.Controllers
     [Route("api/[Controller]")]
     public class UserController : Controller
     {
-        private IUserRepo _userRepo;
-        private IAccountRepo _accountRepo;
+        private IAdapterRepo _adapterRepo;
 
-        public UserController(IUserRepo userRepo, IAccountRepo accountRepo)
+        public UserController( IAdapterRepo adapterRepo)
         {
-            _userRepo = userRepo;
-            _userRepo.Load();
-            _accountRepo = accountRepo;
-            _accountRepo.Load();
+            _adapterRepo = adapterRepo;
         }
 
         // GET api/user
         [HttpGet]
         public IActionResult Get()
         {
-            return new ObjectResult(_userRepo.GetAllUsers());
+            return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
         // GET api/user/dave
         [HttpGet("{username}")]
         public IActionResult Get(string username)
         {
-            if (username == String.Empty)
+            try
+            {
+                return new ObjectResult(_adapterRepo.GetUser(username));
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
-
-            Guid userGuid = _userRepo.GetUser(username);
-            if (userGuid == Guid.Empty)
-                return BadRequest();
-
-            return new ObjectResult(userGuid);
         }
 
         // POST api/user
         [HttpPost("{username}")]
         public IActionResult Post(string username)
         {
-            if (username == null)
+            try
+            {
+                _adapterRepo.AddUser(username);
+                return RedirectToAction("Get", new { username });
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
-
-            _userRepo.AddUser(username);
-            return RedirectToAction("Get", new { username });
         }
 
         // PUT api/user/username/accountname
         [HttpPost("{username}/{accountName}")]
         public IActionResult CreateMoneyAccount(string username, string accountName)
         {
-            Guid userGuid = _userRepo.GetUser(username);
-            if (userGuid == Guid.Empty)
-                return BadRequest();
-
-            if (_accountRepo.GetAccount(accountName) != null)
+            try
+            {
+                _adapterRepo.AddAccount(username, accountName);
+                return RedirectToAction("GetMoneyAccount", new { username, accountName });
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
-
-            _accountRepo.CreateAccount(accountName, userGuid);
-            return RedirectToAction("GetMoneyAccount", new { username, accountName });
         }
 
         [HttpGet("{username}/{accountName}")]
         public IActionResult GetMoneyAccount(string username, string accountName)
         {
-            Guid userGuid = _userRepo.GetUser(username);
-            if (userGuid == Guid.Empty)
+            try
+            {
+                return new ObjectResult(_adapterRepo.GetAccount(username, accountName));
+            }
+            catch (Exception)
+            {
                 return BadRequest();
-
-            Account account = _accountRepo.GetAccount(accountName);
-            if (account == null)
-                return BadRequest();
-
-            return new ObjectResult(account);
+            }
         }
 
         //// PUT api/user/username/accountname

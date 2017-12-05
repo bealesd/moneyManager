@@ -10,9 +10,10 @@ namespace MoneyApp.Repos
     public interface IUserRepo
     {
         IEnumerable<IUser> GetAllUsers();
-        Guid GetUser(string username);
-        void AddUser(string username);
+        User GetUser(string username);
+        bool AddUser(string username);
         void Save();
         void Load();
+        void AddAccount(string username, Guid accountGuid);
     }
 }
