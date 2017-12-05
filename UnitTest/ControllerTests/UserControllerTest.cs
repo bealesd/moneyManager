@@ -54,7 +54,7 @@ namespace UnitTest.ControllerTests
         }
 
         [Test]
-        public void Post_A_User_Add_A_User()
+        public void Posting_A_User_Creates_A_New_User()
         {
             var username = "dave";
             var daveGuid = Guid.NewGuid();
@@ -73,7 +73,7 @@ namespace UnitTest.ControllerTests
         }
 
         [Test]
-        public void Add_An_Account_To_A_User_Returns_A_New_Account()
+        public void Add_A_New_Account_To_A_Valid_User_Returns_A_New_Account()
         {
             var username = "dave";
             var daveGuid = Guid.NewGuid();
@@ -82,15 +82,37 @@ namespace UnitTest.ControllerTests
             var fakeUserRepo = A.Fake<IUserRepo>();
             var fakeAccountRepo = A.Fake<IAccountRepo>();
 
-            A.CallTo(() => fakeAccountRepo.GetAccount(username)).Returns(account);
+            A.CallTo(() => fakeAccountRepo.GetAccount(account.AccountName)).Returns(null);
             A.CallTo(() => fakeUserRepo.GetUser(username)).Returns(daveGuid);
 
             var controller = new UserController(fakeUserRepo, fakeAccountRepo);
-            var result = controller.CreateMoneyAccount(username, account.AccountName) as ObjectResult;
-            var resultAccount = result.Value as Account;
+            var result = controller.CreateMoneyAccount(username, account.AccountName) as RedirectToActionResult;
 
-            Assert.That(daveGuid, Is.EqualTo(resultAccount.AccountGuid));
-            Assert.That(account.AccountName, Is.EqualTo(resultAccount.AccountName));
+            Assert.That("GetMoneyAccount", Is.EqualTo(result.ActionName));
+            Assert.That(account.AccountName, Is.EqualTo(result.RouteValues["accountName"]));
+            Assert.That(username, Is.EqualTo(result.RouteValues["username"]));
+        }
+
+        [Test]
+        public void Using_A_Valid_Username_And_Account_Name_Returns_An_Account()
+        {
+            var username = "dave";
+            var daveGuid = Guid.NewGuid();
+            var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa", UserGuid = daveGuid };
+
+            var fakeUserRepo = A.Fake<IUserRepo>();
+            var fakeAccountRepo = A.Fake<IAccountRepo>();
+
+            A.CallTo(() => fakeUserRepo.GetUser(username)).Returns(daveGuid);
+            A.CallTo(() => fakeAccountRepo.GetAccount(account.AccountName)).Returns(account);
+
+            var userController = new UserController(fakeUserRepo, fakeAccountRepo);
+            var result = userController.GetMoneyAccount(username, account.AccountName) as ObjectResult;
+            var accountResult = result.Value as Account;
+
+            Assert.That(account.AccountGuid, Is.EqualTo(accountResult.AccountGuid));
+            Assert.That(daveGuid, Is.EqualTo(accountResult.UserGuid));
+
         }
     }
 }
