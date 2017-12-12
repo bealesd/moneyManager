@@ -28,34 +28,33 @@ namespace MoneyApp.Repos
             return _userRepo.GetAllUsers();
         }
 
-        public void AddUser(string username)
+        public bool AddUser(string username)
         {
-            if (!_userRepo.AddUser(username))
-            {
-                throw new InvalidOperationException();
-            }
+            return _userRepo.AddUser(username);
         }
 
         public IAccount GetAccount(string username, string accountName)
         {
             var user = _userRepo.GetUser(username);
-            if (user == null) throw new InvalidOperationException();
+            if (user == null) return null;
 
             Guid accountGuid = user.AccountGuid.FirstOrDefault(guid => _accountRepo.GetAccount(guid).AccountName == accountName);
-            if (accountGuid == Guid.Empty) throw new InvalidOperationException();
+            if (accountGuid == Guid.Empty) return null;
 
             return _accountRepo.GetAccount(accountGuid);
         }
 
-        public void AddAccount(string username, string accountName)
+        public bool AddAccount(string username, string accountName)
         {
             User user = _userRepo.GetUser(username);
-            if (user == null) throw new InvalidOperationException();
-
+            if (user == null)
+                return false;
+            
             if (user.AccountGuid.Any(guid => _accountRepo.GetAccount(guid).AccountName == accountName))
-                throw new InvalidOperationException();
+                return false;
 
             _userRepo.AddAccount(username, _accountRepo.CreateAccount(accountName));
+            return true;
         }
     }
 }

@@ -47,5 +47,14 @@ namespace MoneyApp.Repos
             var account = _accounts.FirstOrDefault(a => a.AccountGuid == accountGuid);
             return account;
         }
+
+        public bool DeleteAccount(Guid accountGuid)
+        {
+            var account = this.GetAccount(accountGuid);
+            if (account.Equals(null))
+                return false;
+            _accounts.Remove(account);
+            return true;
+        }
     }
 }
