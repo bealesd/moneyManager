@@ -77,8 +77,13 @@ namespace MoneyApp.Repos
             return user;
         }
 
-        public bool DeleteUser()
+        public bool DeleteUser(string username)
         {
+            var user = GetUser(username);
+            if (user.Equals(null))
+                return false;
+            _users.Remove(user);
+            Save();
             return true;
         }
     }
