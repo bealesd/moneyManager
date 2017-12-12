@@ -15,29 +15,31 @@ namespace UnitTest.ControllerTests
     [TestFixture]
     public class UserControllerTest
     {
+        private IUser _user;
+
+        [SetUp]
+        public void SettingUp()
+        {
+            _user = new User()
+            {
+                AccountGuid = new List<Guid>(),
+                UserGuid = Guid.NewGuid(),
+                Username = "dave"
+            };
+        }
+
         [Test]
         public void Get_User_David_Returns_A_Single_User()
         {
-            var username = "dave";
-            var daveGuid = Guid.NewGuid();
-
-            IUser user = new User()
-            {
-                AccountGuid = new List<Guid>(),
-                UserGuid = daveGuid,
-                Username = username
-            };
-
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-
-            A.CallTo(() => fakeAdapterRepo.GetUser(username)).Returns(user);
+            A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.Get(username) as ObjectResult;
+            var result = userController.Get(_user.Username) as ObjectResult;
             var userResult = result.Value as IUser;
 
-            Assert.That(username, Is.EqualTo(userResult.Username));
-            Assert.That(daveGuid, Is.EqualTo(userResult.UserGuid));
+            Assert.That(_user.Username, Is.EqualTo(userResult.Username));
+            Assert.That(_user.UserGuid, Is.EqualTo(userResult.UserGuid));
         }
 
         [Test]
@@ -48,9 +50,7 @@ namespace UnitTest.ControllerTests
                 new User() { UserGuid = Guid.NewGuid(), Username = "dave" },
                 new User() { UserGuid = Guid.NewGuid(), Username = "ethan" }
             };
-
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-
             A.CallTo(() => fakeAdapterRepo.GetAllUsers()).Returns(fakeUsers);
 
             var userController = new UserController(fakeAdapterRepo);
@@ -64,68 +64,42 @@ namespace UnitTest.ControllerTests
         [Test]
         public void Posting_A_User_Creates_A_New_User()
         {
-            var username = "dave";
-            var daveGuid = Guid.NewGuid();
-
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.Post(username) as RedirectToActionResult;
+            var result = userController.Post(_user.Username) as RedirectToActionResult;
 
-            A.CallTo(() => fakeAdapterRepo.AddUser(username)).MustHaveHappened(Repeated.AtLeast.Times(1));
+            A.CallTo(() => fakeAdapterRepo.AddUser(_user.Username)).MustHaveHappened(Repeated.AtLeast.Times(1));
             Assert.That("get", Is.EqualTo(result.ActionName.ToLower(CultureInfo.InvariantCulture)));
-            Assert.That("dave", Is.EqualTo(result.RouteValues["username"]));
+            Assert.That(_user.Username, Is.EqualTo(result.RouteValues["username"]));
         }
 
         [Test]
         public void Add_A_New_Account_To_A_Valid_User_Returns_A_New_Account()
         {
-            var username = "dave";
-            var daveGuid = Guid.NewGuid();
-
-            IUser user = new User()
-            {
-                AccountGuid = new List<Guid>(),
-                UserGuid = daveGuid,
-                Username = username
-            };
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
-
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-
-            A.CallTo(() => fakeAdapterRepo.GetAccount(username, account.AccountName)).Returns(null);
-            A.CallTo(() => fakeAdapterRepo.GetUser(username)).Returns(user);
+            A.CallTo(() => fakeAdapterRepo.GetAccount(_user.Username, account.AccountName)).Returns(null);
+            A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
 
             var controller = new UserController(fakeAdapterRepo);
-            var result = controller.CreateMoneyAccount(username, account.AccountName) as RedirectToActionResult;
+            var result = controller.CreateMoneyAccount(_user.Username, account.AccountName) as RedirectToActionResult;
 
             Assert.That("GetMoneyAccount", Is.EqualTo(result.ActionName));
             Assert.That(account.AccountName, Is.EqualTo(result.RouteValues["accountName"]));
-            Assert.That(username, Is.EqualTo(result.RouteValues["username"]));
+            Assert.That(_user.Username, Is.EqualTo(result.RouteValues["username"]));
         }
 
         [Test]
         public void Using_A_Valid_Username_And_Account_Name_Returns_An_Account()
         {
-            var username = "dave";
-            var daveGuid = Guid.NewGuid();
-
-            IUser user = new User()
-            {
-                AccountGuid = new List<Guid>(),
-                UserGuid = daveGuid,
-                Username = username
-            };
-
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
-
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-
-            A.CallTo(() => fakeAdapterRepo.GetUser(username)).Returns(user);
-            A.CallTo(() => fakeAdapterRepo.GetAccount(username,account.AccountName)).Returns(account);
+            A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
+            A.CallTo(() => fakeAdapterRepo.GetAccount(_user.Username, account.AccountName)).Returns(account);
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.GetMoneyAccount(username, account.AccountName) as ObjectResult;
+            var result = userController.GetMoneyAccount(_user.Username, account.AccountName) as ObjectResult;
             var accountResult = result.Value as Account;
 
             Assert.That(account.AccountGuid, Is.EqualTo(accountResult.AccountGuid));
