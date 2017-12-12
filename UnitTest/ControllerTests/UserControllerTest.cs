@@ -35,7 +35,7 @@ namespace UnitTest.ControllerTests
             A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.Get(_user.Username) as ObjectResult;
+            var result = userController.GetUser(_user.Username) as ObjectResult;
             var userResult = result.Value as IUser;
 
             Assert.That(_user.Username, Is.EqualTo(userResult.Username));
@@ -54,7 +54,7 @@ namespace UnitTest.ControllerTests
             A.CallTo(() => fakeAdapterRepo.GetAllUsers()).Returns(fakeUsers);
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.Get() as ObjectResult;
+            var result = userController.GetUsers() as ObjectResult;
             var users = result.Value as List<User>;
 
             Assert.That(2, Is.EqualTo(users.Count));
@@ -67,10 +67,10 @@ namespace UnitTest.ControllerTests
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.Post(_user.Username) as RedirectToActionResult;
+            var result = userController.PostUser(_user.Username) as RedirectToActionResult;
 
             A.CallTo(() => fakeAdapterRepo.AddUser(_user.Username)).MustHaveHappened(Repeated.AtLeast.Times(1));
-            Assert.That("get", Is.EqualTo(result.ActionName.ToLower(CultureInfo.InvariantCulture)));
+            Assert.That("getuser", Is.EqualTo(result.ActionName.ToLower(CultureInfo.InvariantCulture)));
             Assert.That(_user.Username, Is.EqualTo(result.RouteValues["username"]));
         }
 

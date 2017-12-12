@@ -10,6 +10,7 @@ namespace MoneyApp.Repos
     {
         Guid CreateAccount(string accountName);
         Account GetAccount(Guid accountGuid);
+        bool DeleteAccount(Guid accountGuid);
         void Load();
         void Save();
     }

@@ -23,14 +23,14 @@ namespace MoneyApp.Controllers
 
         // GET api/user
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetUsers()
         {
             return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
         // GET api/user/dave
         [HttpGet("{username}")]
-        public IActionResult Get(string username)
+        public IActionResult GetUser(string username)
         {
             try
             {
@@ -44,12 +44,12 @@ namespace MoneyApp.Controllers
 
         // POST api/user
         [HttpPost("{username}")]
-        public IActionResult Post(string username)
+        public IActionResult PostUser(string username)
         {
             try
             {
                 _adapterRepo.AddUser(username);
-                return RedirectToAction("Get", new { username });
+                return RedirectToAction(nameof(GetUser), new { username });
             }
             catch (Exception)
             {
@@ -64,7 +64,7 @@ namespace MoneyApp.Controllers
             try
             {
                 _adapterRepo.AddAccount(username, accountName);
-                return RedirectToAction("GetMoneyAccount", new { username, accountName });
+                return RedirectToAction(nameof(GetMoneyAccount), new { username, accountName });
             }
             catch (Exception)
             {
@@ -83,6 +83,18 @@ namespace MoneyApp.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        // api/user/username/accountname/delete?isDelete=true
+        [HttpGet("{username}/{accountName}/{delete}")]
+        public IActionResult DeleteMoneyAccount(string username, string accountName, [FromQuery] bool isDelete)
+        {
+            if (isDelete)
+            {
+                _adapterRepo.RemoveAccount(username, accountName);
+                return RedirectToAction(nameof(GetUser), new { username });
+            }
+            return BadRequest();
         }
 
         //// PUT api/user/username/accountname

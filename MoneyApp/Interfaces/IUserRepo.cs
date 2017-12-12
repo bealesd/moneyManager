@@ -15,5 +15,6 @@ namespace MoneyApp.Repos
         void Save();
         void Load();
         void AddAccount(string username, Guid accountGuid);
+        bool DeleteAccount(Guid accountGuid, string username);
     }
 }

@@ -56,5 +56,21 @@ namespace MoneyApp.Repos
             _userRepo.AddAccount(username, _accountRepo.CreateAccount(accountName));
             return true;
         }
+
+        public bool RemoveAccount(string username, string accountName)
+        {
+            User user = _userRepo.GetUser(username);
+            if (user == null)
+                return false;
+
+            Guid accountGuid =user.AccountGuid.FirstOrDefault(guid => _accountRepo.GetAccount(guid).AccountName == accountName);
+            if (accountGuid.Equals(null))
+            {
+                return false;
+            }
+            _userRepo.DeleteAccount(accountGuid, username);
+            _accountRepo.DeleteAccount(accountGuid);
+            return true;
+        }
     }
 }
