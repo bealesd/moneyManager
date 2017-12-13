@@ -1,2 +1,7 @@
-﻿Add unit tests for the repos
-Update the userRepoTests in integration testing to use a teardown and setup
+﻿A user has a Username, Guid and an AccountGuid.
+A account has a AccountName and an AccountGuid.
+So where is the account information stored, in an MoneySpentItem: amount, on what, an instance of the balance.
+MoneySpentItem will be a property of the account.
+
+1. Add new List<MoneySpentItem> to account.
+2. Allow user to add new MoneySpentItem to their account, in the adapter and the account.

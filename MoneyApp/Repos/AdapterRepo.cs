@@ -72,5 +72,14 @@ namespace MoneyApp.Repos
             _accountRepo.DeleteAccount(accountGuid);
             return true;
         }
+
+        public IAccount AddMoneySpentItem(string username, string accountName, string itemName, float itemCost, DateTime dateTime)
+        {
+            var account = this.GetAccount(username, accountName);
+            if (account.Equals(null))
+                return null;
+            _accountRepo.AddMoneySpentItem(account.AccountGuid, itemName, itemCost, dateTime);
+            return account;
+        }
     }
 }

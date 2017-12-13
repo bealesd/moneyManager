@@ -7,8 +7,17 @@ namespace MoneyApp.Models
 {
     public class MoneySpentItem
     {
+        
+        public Guid MoneySpentItemGuid { get; set; }
         public string ItemName { get; set; }
         public float ItemCost { get; set; }
-        public Guid AccountGuid { get; set; }
+        private float _balance;
+        public float Balance
+        {
+            get => _balance - ItemCost; 
+            set => _balance = value; 
+        }
+
+        public DateTime Datetime { get; set; }
     }
 }

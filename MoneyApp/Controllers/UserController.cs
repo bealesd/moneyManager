@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
+using MoneyApp.Dto;
 using MoneyApp.Interfaces;
 using MoneyApp.Models;
 using MoneyApp.Repos;
+using Newtonsoft.Json.Linq;
 
 namespace MoneyApp.Controllers
 {
@@ -25,6 +27,7 @@ namespace MoneyApp.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
+            Console.WriteLine(DateTime.Now);
             return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
@@ -77,8 +80,8 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                var a = _adapterRepo.GetAccount(username, accountName);
-                return _adapterRepo.GetAccount(username, accountName) != null ? new ObjectResult(_adapterRepo.GetAccount(username, accountName)): BadRequest("Could Not Get Account");
+                var account = _adapterRepo.GetAccount(username, accountName);
+                return account != null ? new ObjectResult(account) : BadRequest("Could Not Get Account");
             }
             catch (Exception)
             {
@@ -101,17 +104,11 @@ namespace MoneyApp.Controllers
             }
         }
 
-        //// PUT api/user/username/accountname
-        //[HttpPut("{username}/{accountName}")]
-        //public IActionResult Put(string username, string accountName)
-        //{
-
-        //}
-
-        //// DELETE api/values/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpPost("{username}/{accountName}/moneyItem")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
+        public IActionResult AddMoneySpentItem(string username, string accountName, [FromBody] MoneySpentItemDto model)
+        {
+            var account = _adapterRepo.AddMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);
+            return new ObjectResult(account);
+        }
     }
 }

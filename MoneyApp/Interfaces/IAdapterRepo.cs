@@ -10,6 +10,7 @@ namespace MoneyApp.Interfaces
         bool AddNewAccount(string username, string accountName);
         bool RemoveAccount(string username, string accountName);
         IAccount GetAccount(string username, string accountName);
+        IAccount AddMoneySpentItem(string username, string accountName, string itemName, float itemCost, DateTime dateTime);
         IEnumerable<IUser> GetAllUsers();
         IUser GetUser(string username);
         bool AddUser(string username);

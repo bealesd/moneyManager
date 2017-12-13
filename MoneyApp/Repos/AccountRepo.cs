@@ -36,6 +36,7 @@ namespace MoneyApp.Repos
             {
                 AccountGuid = Guid.NewGuid(),
                 AccountName = accountName,
+                MoneySpentItems = new List<MoneySpentItem>()
             };
             _accounts.Add(account);
             Save();
@@ -54,7 +55,26 @@ namespace MoneyApp.Repos
             if (account.Equals(null))
                 return false;
             _accounts.Remove(account);
+            Save();
             return true;
+        }
+
+        public Account AddMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
+        {
+            var account = this.GetAccount(accountGuid);
+            if (account.Equals(null))
+                return null;
+            account.MoneySpentItems.Add(new MoneySpentItem()
+            {
+                MoneySpentItemGuid = Guid.NewGuid(),
+                ItemName = itemName,
+                ItemCost = itemCost,
+                Balance = account.AccountBalance,
+                Datetime = dateTime
+            });
+            account.AccountBalance -= itemCost;
+            Save();
+            return account;
         }
     }
 }

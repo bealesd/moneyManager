@@ -10,5 +10,7 @@ namespace MoneyApp.Models
     {
         public string AccountName { get; set; }
         public Guid AccountGuid { get; set; }
+        public float AccountBalance { get; set; }
+        public List<MoneySpentItem> MoneySpentItems { get; set; }
     }
 }

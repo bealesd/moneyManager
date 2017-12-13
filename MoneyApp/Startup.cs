@@ -14,6 +14,7 @@ using MoneyApp.IO;
 using MoneyApp.Repos;
 using MoneyApp.Helper;
 using MoneyApp.Interfaces;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace MoneyApp
 {
@@ -37,6 +38,9 @@ namespace MoneyApp
             //services.AddSingleton<IAccountRepo>(new AccountRepo(new JsonReaderWriter(),
             //                                         new Helper.Helper().TempPath("account.txt")));
 
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
+
+
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
                                                         new UserRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("users.txt")), 
@@ -53,6 +57,9 @@ namespace MoneyApp
             }
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "User Api"); });
         }
     }
 }
