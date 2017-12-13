@@ -7,7 +7,7 @@ namespace MoneyApp.Interfaces
 {
     public interface IAdapterRepo
     {
-        bool AddAccount(string username, string accountName);
+        bool AddNewAccount(string username, string accountName);
         bool RemoveAccount(string username, string accountName);
         IAccount GetAccount(string username, string accountName);
         IEnumerable<IUser> GetAllUsers();

@@ -93,9 +93,24 @@ namespace UnitTest.UnitTests
             A.CallTo(() => _fakeIAccountRepo.CreateAccount(account.AccountName)).Returns(account.AccountGuid);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isAccountAdded = adapterRepo.AddAccount(_users[1].Username, account.AccountName);
+            var isAccountAdded = adapterRepo.AddNewAccount(_users[1].Username, account.AccountName);
 
             Assert.That(true, Is.EqualTo(isAccountAdded));
+        }
+
+        [Test]
+        public void Remove_An_Existing_Account_From_A_User()
+        {
+            var account = new Account() { AccountGuid = _user.AccountGuid[0], AccountName = "davesAccount" };
+            A.CallTo(() => _fakeIUserRepo.GetUser(_user.Username)).Returns(_user);
+            A.CallTo(() => _fakeIAccountRepo.GetAccount(account.AccountGuid)).Returns(account);
+            A.CallTo(() => _fakeIUserRepo.DeleteAccount(account.AccountGuid, _user.Username)).Returns(true);
+            A.CallTo(() => _fakeIAccountRepo.DeleteAccount(account.AccountGuid)).Returns(true);
+
+            var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
+            var isAccountRemoved = adapterRepo.RemoveAccount(_user.Username, account.AccountName);
+
+            Assert.That(true, Is.EqualTo(isAccountRemoved));
         }
     }
 }

@@ -105,5 +105,19 @@ namespace UnitTest.ControllerTests
             Assert.That(account.AccountGuid, Is.EqualTo(accountResult.AccountGuid));
             Assert.That(account.AccountName, Is.EqualTo(accountResult.AccountName));
         }
+
+        [Test]
+        public void Delete_A_Money_Account_From_A_User_Removes_That_Account()
+        {
+            var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa" };
+            var fakeAdapterRepo = A.Fake<IAdapterRepo>();
+            A.CallTo(() => fakeAdapterRepo.RemoveAccount(_user.Username, account.AccountName)).Returns(true);
+
+            var userController = new UserController(fakeAdapterRepo);
+            var result = userController.DeleteMoneyAccount(_user.Username, account.AccountName) as RedirectToActionResult;
+
+            A.CallTo(() => fakeAdapterRepo.RemoveAccount(A<string>.Ignored, A<string>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+            Assert.That("GetUser", Is.EqualTo(result.ActionName));
+        }
     }
 }

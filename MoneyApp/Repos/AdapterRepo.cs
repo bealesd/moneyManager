@@ -44,7 +44,7 @@ namespace MoneyApp.Repos
             return _accountRepo.GetAccount(accountGuid);
         }
 
-        public bool AddAccount(string username, string accountName)
+        public bool AddNewAccount(string username, string accountName)
         {
             User user = _userRepo.GetUser(username);
             if (user == null)

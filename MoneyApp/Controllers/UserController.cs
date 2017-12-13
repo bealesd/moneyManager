@@ -38,7 +38,7 @@ namespace MoneyApp.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Could Not Get User");
             }
         }
 
@@ -53,7 +53,7 @@ namespace MoneyApp.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Could Not Create User");
             }
         }
 
@@ -63,12 +63,12 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.AddAccount(username, accountName);
+                _adapterRepo.AddNewAccount(username, accountName);
                 return RedirectToAction(nameof(GetMoneyAccount), new { username, accountName });
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Could Not Create Account");
             }
         }
 
@@ -77,24 +77,28 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                return new ObjectResult(_adapterRepo.GetAccount(username, accountName));
+                var a = _adapterRepo.GetAccount(username, accountName);
+                return _adapterRepo.GetAccount(username, accountName) != null ? new ObjectResult(_adapterRepo.GetAccount(username, accountName)): BadRequest("Could Not Get Account");
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Could Not Get Account");
             }
         }
 
         // api/user/username/accountname/delete?isDelete=true
-        [HttpGet("{username}/{accountName}/{delete}")]
-        public IActionResult DeleteMoneyAccount(string username, string accountName, [FromQuery] bool isDelete)
+        [HttpDelete("{username}/{accountName}")]
+        public IActionResult DeleteMoneyAccount(string username, string accountName)
         {
-            if (isDelete)
+            try
             {
                 _adapterRepo.RemoveAccount(username, accountName);
                 return RedirectToAction(nameof(GetUser), new { username });
             }
-            return BadRequest();
+            catch (Exception)
+            {
+                return BadRequest("Could Not Delete Account");
+            }
         }
 
         //// PUT api/user/username/accountname
