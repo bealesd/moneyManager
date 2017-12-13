@@ -3,5 +3,5 @@ A account has a AccountName and an AccountGuid.
 So where is the account information stored, in an MoneySpentItem: amount, on what, an instance of the balance.
 MoneySpentItem will be a property of the account.
 
-1. Add new List<MoneySpentItem> to account.
-2. Allow user to add new MoneySpentItem to their account, in the adapter and the account.
+1. Delete User in controller
+2. Stop items with same datetime being added.

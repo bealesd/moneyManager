@@ -37,7 +37,8 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                return new ObjectResult(_adapterRepo.GetUser(username));
+                var user = _adapterRepo.GetUser(username);
+                return user == null ? BadRequest("Could Not Get User") : new ObjectResult(_adapterRepo.GetUser(username));
             }
             catch (Exception)
             {
@@ -104,7 +105,7 @@ namespace MoneyApp.Controllers
             }
         }
 
-        [HttpPost("{username}/{accountName}/moneyItem")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
+        [HttpPost("{username}/{accountName}/addMoneyItem")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
         public IActionResult AddMoneySpentItem(string username, string accountName, [FromBody] MoneySpentItemDto model)
         {
             var account = _adapterRepo.AddMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);

@@ -64,6 +64,15 @@ namespace MoneyApp.Repos
             var account = this.GetAccount(accountGuid);
             if (Object.Equals(null, account))
                 return null;
+
+            // datetime compare to previous datetimes in list
+            foreach (var currentMoneySpentItem in account.MoneySpentItems)
+            {
+                var result = DateTime.Compare(currentMoneySpentItem.Datetime, dateTime);
+                if (result == 0)
+                    return null;
+            }
+
             account.MoneySpentItems.Add(new MoneySpentItem()
             {
                 MoneySpentItemGuid = Guid.NewGuid(),
@@ -87,7 +96,18 @@ namespace MoneyApp.Repos
             if (Object.Equals(moneySpentItem, null))
                 return account;
 
-            account.AccountBalance += moneySpentItem.ItemCost;
+            var moneySpentItemCost =  moneySpentItem.ItemCost;
+            account.AccountBalance += moneySpentItemCost;
+
+            // TODO: change in balance needs to adjust the balance attribute of each moneySpentItem.
+            // TODO: will iterate through each item, assuming not ordered and where datetime is after change, add balance change to balance property.
+            foreach (var currentMoneySpentItem in account.MoneySpentItems)
+            {
+                var result = DateTime.Compare(currentMoneySpentItem.Datetime, moneySpentItem.Datetime);
+                if (result == 1)
+                    currentMoneySpentItem.Balance += moneySpentItemCost;
+            }
+
             account.MoneySpentItems.Remove(moneySpentItem);
             Save();
             return account;
