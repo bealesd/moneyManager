@@ -52,7 +52,7 @@ namespace MoneyApp.Repos
         public bool DeleteAccount(Guid accountGuid)
         {
             var account = this.GetAccount(accountGuid);
-            if (account.Equals(null))
+            if (Object.Equals(null, account))
                 return false;
             _accounts.Remove(account);
             Save();
@@ -62,7 +62,7 @@ namespace MoneyApp.Repos
         public Account AddMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
             var account = this.GetAccount(accountGuid);
-            if (account.Equals(null))
+            if (Object.Equals(null, account))
                 return null;
             account.MoneySpentItems.Add(new MoneySpentItem()
             {
@@ -73,6 +73,22 @@ namespace MoneyApp.Repos
                 Datetime = dateTime
             });
             account.AccountBalance -= itemCost;
+            Save();
+            return account;
+        }
+
+        public Account RemoveMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
+        {
+            var account = this.GetAccount(accountGuid);
+            if (Object.Equals(null, account))
+                return null;
+
+            var moneySpentItem = account.MoneySpentItems.FirstOrDefault(m => m.MoneySpentItemGuid == moneyItemGuid);
+            if (Object.Equals(moneySpentItem, null))
+                return account;
+
+            account.AccountBalance += moneySpentItem.ItemCost;
+            account.MoneySpentItems.Remove(moneySpentItem);
             Save();
             return account;
         }

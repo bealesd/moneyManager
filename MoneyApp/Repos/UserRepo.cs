@@ -90,7 +90,7 @@ namespace MoneyApp.Repos
         public bool DeleteAccount(Guid accountGuid, string username)
         {
             var user = this.GetUser(username);
-            if (user.Equals(null))
+            if (Object.Equals(user, null))
                 return false;
             if (user.AccountGuid.FirstOrDefault(g => g == accountGuid) == Guid.Empty)
             {

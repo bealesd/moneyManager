@@ -64,7 +64,7 @@ namespace MoneyApp.Repos
                 return false;
 
             Guid accountGuid =user.AccountGuid.FirstOrDefault(guid => _accountRepo.GetAccount(guid).AccountName == accountName);
-            if (accountGuid.Equals(null))
+            if (accountGuid == Guid.Empty)
             {
                 return false;
             }
@@ -76,9 +76,18 @@ namespace MoneyApp.Repos
         public IAccount AddMoneySpentItem(string username, string accountName, string itemName, float itemCost, DateTime dateTime)
         {
             var account = this.GetAccount(username, accountName);
-            if (account.Equals(null))
+            if (Object.Equals(account, null))
                 return null;
             _accountRepo.AddMoneySpentItem(account.AccountGuid, itemName, itemCost, dateTime);
+            return account;
+        }
+
+        public IAccount RemoveMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
+        {
+            var account = this.GetAccount(username, accountName);
+            if (Object.Equals(account, null))
+                return null;
+            _accountRepo.RemoveMoneySpentItem(account.AccountGuid, moneyItemGuid);
             return account;
         }
     }

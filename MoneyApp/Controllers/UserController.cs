@@ -110,5 +110,12 @@ namespace MoneyApp.Controllers
             var account = _adapterRepo.AddMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);
             return new ObjectResult(account);
         }
+
+        [HttpDelete("{username}/{accountName}/{moneyItemGuid}")]
+        public IActionResult RemoveMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
+        {
+            var account = _adapterRepo.RemoveMoneySpentItem(username, accountName, moneyItemGuid);
+            return new ObjectResult(account);
+        }
     }
 }
