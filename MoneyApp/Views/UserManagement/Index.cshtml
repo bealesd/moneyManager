@@ -1,1 +1,12 @@
 ﻿
+@{
+    ViewBag.Title = "Login View";
+}
+
+<div class="form-group">
+    <form asp-action="LoadAccountUserView">
+        <label>Username</label>
+        <input class="form-control" type="text" name="username"/>
+        <button class="btn">Submit</button>
+    </form>
+</div>
