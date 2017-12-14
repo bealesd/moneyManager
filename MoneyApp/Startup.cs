@@ -32,12 +32,6 @@ namespace MoneyApp
         {
             services.AddMvc();
 
-            //services.AddSingleton<IUserRepo>(new UserRepo(new JsonReaderWriter(),
-            //                                     new Helper.Helper().TempPath("users.txt")));
-
-            //services.AddSingleton<IAccountRepo>(new AccountRepo(new JsonReaderWriter(),
-            //                                         new Helper.Helper().TempPath("account.txt")));
-
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
 
 
