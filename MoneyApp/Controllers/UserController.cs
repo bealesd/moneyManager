@@ -52,8 +52,10 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.CreateUser(username);
-                return RedirectToAction(nameof(GetUser), new { username });
+                var result =_adapterRepo.CreateUser(username);
+                if (result)
+                    return RedirectToAction(nameof(GetUser), new { username });
+                return BadRequest("Could Not Create User");
             }
             catch (Exception)
             {
@@ -61,11 +63,14 @@ namespace MoneyApp.Controllers
             }
         }
 
-        //[HttpDelete("{username}")]
-        //public IActionResult RemoveAccountFromUser()
-        //{
-        //    _adapterRepo.
-        //}
+        [HttpDelete("{username}")]
+        public IActionResult DeleteUser(string username)
+        {
+            var result = _adapterRepo.DeleteUser(username);
+            if (result)
+                return RedirectToAction(nameof(GetUsers));
+            return BadRequest("Could Not Delete User");
+        }
 
         // PUT api/user/username/accountname
         [HttpPost("{username}/{accountName}")]

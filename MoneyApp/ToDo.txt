@@ -1,1 +1,8 @@
-﻿
+﻿Create a UI
+- home view
+	- login with a username form - loads accounts overview view
+	- register button -  loads the register view
+- register view
+	- a form with a username
+- account overview view
+	- all user accounts shown, with a current balance & account name & activity colour bar (avg.transactions/6 mth, <1, 1-10, 10-100, 100+, white-red)

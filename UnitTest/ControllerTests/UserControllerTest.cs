@@ -65,6 +65,7 @@ namespace UnitTest.ControllerTests
         public void Posting_A_User_Creates_A_New_User()
         {
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
+            A.CallTo(() => fakeAdapterRepo.CreateUser(_user.Username)).Returns(true);
 
             var userController = new UserController(fakeAdapterRepo);
             var result = userController.PostUser(_user.Username) as RedirectToActionResult;

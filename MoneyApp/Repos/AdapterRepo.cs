@@ -35,6 +35,8 @@ namespace MoneyApp.Repos
 
         public bool DeleteUser(string username)
         {
+            if (_userRepo.GetUser(username).AccountGuid.Count > 0)
+                return false;
             return _userRepo.DeleteUser(username);
         }
 
