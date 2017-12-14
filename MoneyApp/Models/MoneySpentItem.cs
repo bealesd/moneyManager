@@ -11,13 +11,8 @@ namespace MoneyApp.Models
         public Guid MoneySpentItemGuid { get; set; }
         public string ItemName { get; set; }
         public float ItemCost { get; set; }
-        private float _balance;
-        public float Balance
-        {
-            get => _balance - ItemCost; 
-            set => _balance = value; 
-        }
-
+        public float BalanceBefore { get; set; }
+        public float BalanceAfter { get { return BalanceBefore - ItemCost; }}
         public DateTime Datetime { get; set; }
     }
 }

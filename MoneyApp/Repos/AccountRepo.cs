@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using MoneyApp.Helper;
 using MoneyApp.IO;
 using MoneyApp.Models;
 
@@ -64,23 +64,18 @@ namespace MoneyApp.Repos
             var account = this.GetAccount(accountGuid);
             if (Object.Equals(null, account))
                 return null;
-
-            // datetime compare to previous datetimes in list
-            foreach (var currentMoneySpentItem in account.MoneySpentItems)
-            {
-                var result = DateTime.Compare(currentMoneySpentItem.Datetime, dateTime);
-                if (result == 0)
-                    return null;
-            }
+            if (account.MoneySpentItems.Any(m => DateTime.Compare(m.Datetime, dateTime) == 0))
+                return null;
 
             account.MoneySpentItems.Add(new MoneySpentItem()
             {
                 MoneySpentItemGuid = Guid.NewGuid(),
                 ItemName = itemName,
                 ItemCost = itemCost,
-                Balance = account.AccountBalance,
                 Datetime = dateTime
             });
+
+            account.MoneySpentItems.Update();
             account.AccountBalance -= itemCost;
             Save();
             return account;
@@ -89,26 +84,16 @@ namespace MoneyApp.Repos
         public Account RemoveMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
             var account = this.GetAccount(accountGuid);
+
             if (Object.Equals(null, account))
                 return null;
-
             var moneySpentItem = account.MoneySpentItems.FirstOrDefault(m => m.MoneySpentItemGuid == moneyItemGuid);
             if (Object.Equals(moneySpentItem, null))
                 return account;
-
-            var moneySpentItemCost =  moneySpentItem.ItemCost;
-            account.AccountBalance += moneySpentItemCost;
-
-            // TODO: change in balance needs to adjust the balance attribute of each moneySpentItem.
-            // TODO: will iterate through each item, assuming not ordered and where datetime is after change, add balance change to balance property.
-            foreach (var currentMoneySpentItem in account.MoneySpentItems)
-            {
-                var result = DateTime.Compare(currentMoneySpentItem.Datetime, moneySpentItem.Datetime);
-                if (result == 1)
-                    currentMoneySpentItem.Balance += moneySpentItemCost;
-            }
-
+            //account.MoneySpentItems.Where(m => DateTime.Compare(m.Datetime, moneySpentItem.Datetime) == 1).ToList().ForEach(m => m.BalanceBefore += moneySpentItem.ItemCost);
             account.MoneySpentItems.Remove(moneySpentItem);
+            account.MoneySpentItems.Update();
+            account.AccountBalance += moneySpentItem.ItemCost;
             Save();
             return account;
         }

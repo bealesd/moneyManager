@@ -82,6 +82,7 @@ namespace MoneyApp.Controllers
             try
             {
                 var account = _adapterRepo.GetAccount(username, accountName);
+                return true ? new ObjectResult(account) : BadRequest("Could Not Get Account");
                 return account != null ? new ObjectResult(account) : BadRequest("Could Not Get Account");
             }
             catch (Exception)
@@ -96,8 +97,9 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.RemoveAccount(username, accountName);
-                return RedirectToAction(nameof(GetUser), new { username });
+                if (_adapterRepo.RemoveAccount(username, accountName))
+                    return RedirectToAction(nameof(GetUser), new {username});
+                return BadRequest("Could Not Delete Account");
             }
             catch (Exception)
             {
