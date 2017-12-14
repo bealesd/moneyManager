@@ -25,7 +25,7 @@ namespace MoneyApp
             //UserRepo userRepo = new UserRepo(new JsonReaderWriter(),
             //                                     @"C:\Users\dave\Desktop\Users.txt");
 
-            //userRepo.AddUser("David Beales");
+            //userRepo.AddAccountToUser("David Beales");
 
             //System.Threading.Thread.Sleep(2000);
 

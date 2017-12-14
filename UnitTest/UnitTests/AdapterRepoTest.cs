@@ -63,10 +63,10 @@ namespace UnitTest.UnitTests
         [Test]
         public void Add_User_Returns_A_User()
         {
-            A.CallTo(() => _fakeIUserRepo.AddUser(_user.Username)).Returns(true);
+            A.CallTo(() => _fakeIUserRepo.CreateUser(_user.Username)).Returns(true);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isUserAdded = adapterRepo.AddUser(_user.Username);
+            var isUserAdded = adapterRepo.CreateUser(_user.Username);
 
             Assert.That(true, Is.EqualTo(isUserAdded));
         }
@@ -76,10 +76,10 @@ namespace UnitTest.UnitTests
         {
             var account = new Account() { AccountGuid = _user.AccountGuid[0], AccountName = "davesAccount" };
             A.CallTo(() => _fakeIUserRepo.GetUser(_user.Username)).Returns(_user);
-            A.CallTo(() => _fakeIAccountRepo.GetAccount(_user.AccountGuid[0])).Returns(account);
+            A.CallTo(() => _fakeIAccountRepo.GetMoneyAccount(_user.AccountGuid[0])).Returns(account);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var davesAccount = adapterRepo.GetAccount(_user.Username, account.AccountName);
+            var davesAccount = adapterRepo.GetMoneyAccount(_user.Username, account.AccountName);
 
             Assert.That(account.AccountGuid, Is.EqualTo(davesAccount.AccountGuid));
         }
@@ -89,11 +89,11 @@ namespace UnitTest.UnitTests
         {
             var account = new Account() { AccountGuid = _user.AccountGuid[0], AccountName = "davesAccount" };
             A.CallTo(() => _fakeIUserRepo.GetUser(_users[1].Username)).Returns(_users[1]);
-            A.CallTo(() => _fakeIAccountRepo.GetAccount(A<Guid>.Ignored)).Returns(null);
-            A.CallTo(() => _fakeIAccountRepo.CreateAccount(account.AccountName)).Returns(account.AccountGuid);
+            A.CallTo(() => _fakeIAccountRepo.GetMoneyAccount(A<Guid>.Ignored)).Returns(null);
+            A.CallTo(() => _fakeIAccountRepo.CreateMoneyAccount(account.AccountName)).Returns(account.AccountGuid);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isAccountAdded = adapterRepo.AddNewAccount(_users[1].Username, account.AccountName);
+            var isAccountAdded = adapterRepo.CreateMoneyAccount(_users[1].Username, account.AccountName);
 
             Assert.That(true, Is.EqualTo(isAccountAdded));
         }
@@ -103,12 +103,12 @@ namespace UnitTest.UnitTests
         {
             var account = new Account() { AccountGuid = _user.AccountGuid[0], AccountName = "davesAccount" };
             A.CallTo(() => _fakeIUserRepo.GetUser(_user.Username)).Returns(_user);
-            A.CallTo(() => _fakeIAccountRepo.GetAccount(account.AccountGuid)).Returns(account);
-            A.CallTo(() => _fakeIUserRepo.DeleteAccount(account.AccountGuid, _user.Username)).Returns(true);
-            A.CallTo(() => _fakeIAccountRepo.DeleteAccount(account.AccountGuid)).Returns(true);
+            A.CallTo(() => _fakeIAccountRepo.GetMoneyAccount(account.AccountGuid)).Returns(account);
+            A.CallTo(() => _fakeIUserRepo.RemoveAccountFromUser(_user.Username, account.AccountGuid)).Returns(true);
+            A.CallTo(() => _fakeIAccountRepo.DeleteMoneyAccount(account.AccountGuid)).Returns(true);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isAccountRemoved = adapterRepo.RemoveAccount(_user.Username, account.AccountName);
+            var isAccountRemoved = adapterRepo.DeleteMoneyAccount(_user.Username, account.AccountName);
 
             Assert.That(true, Is.EqualTo(isAccountRemoved));
         }

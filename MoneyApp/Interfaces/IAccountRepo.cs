@@ -8,11 +8,11 @@ namespace MoneyApp.Repos
 {
     public interface IAccountRepo
     {
-        Guid CreateAccount(string accountName);
-        Account GetAccount(Guid accountGuid);
-        Account AddMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime);
-        Account RemoveMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
-        bool DeleteAccount(Guid accountGuid);
+        Guid CreateMoneyAccount(string accountName);
+        Account GetMoneyAccount(Guid accountGuid);
+        Account CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime);
+        Account DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
+        bool DeleteMoneyAccount(Guid accountGuid);
         void Load();
         void Save();
     }

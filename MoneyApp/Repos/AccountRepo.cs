@@ -30,7 +30,7 @@ namespace MoneyApp.Repos
             if (currentAccounts != null)
                 _accounts = currentAccounts.ToList();
         }
-        public Guid CreateAccount(string accountName)
+        public Guid CreateMoneyAccount(string accountName)
         {
             var account = new Account()
             {
@@ -43,15 +43,15 @@ namespace MoneyApp.Repos
             return account.AccountGuid;
         }
 
-        public Account GetAccount(Guid accountGuid)
+        public Account GetMoneyAccount(Guid accountGuid)
         {
             var account = _accounts.FirstOrDefault(a => a.AccountGuid == accountGuid);
             return account;
         }
 
-        public bool DeleteAccount(Guid accountGuid)
+        public bool DeleteMoneyAccount(Guid accountGuid)
         {
-            var account = this.GetAccount(accountGuid);
+            var account = this.GetMoneyAccount(accountGuid);
             if (Object.Equals(null, account))
                 return false;
             _accounts.Remove(account);
@@ -59,9 +59,9 @@ namespace MoneyApp.Repos
             return true;
         }
 
-        public Account AddMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
+        public Account CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
-            var account = this.GetAccount(accountGuid);
+            var account = this.GetMoneyAccount(accountGuid);
             if (Object.Equals(null, account))
                 return null;
             if (account.MoneySpentItems.Any(m => DateTime.Compare(m.Datetime, dateTime) == 0))
@@ -81,15 +81,16 @@ namespace MoneyApp.Repos
             return account;
         }
 
-        public Account RemoveMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
+        public Account DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
-            var account = this.GetAccount(accountGuid);
+            var account = this.GetMoneyAccount(accountGuid);
 
             if (Object.Equals(null, account))
                 return null;
             var moneySpentItem = account.MoneySpentItems.FirstOrDefault(m => m.MoneySpentItemGuid == moneyItemGuid);
             if (Object.Equals(moneySpentItem, null))
                 return account;
+
             //account.MoneySpentItems.Where(m => DateTime.Compare(m.Datetime, moneySpentItem.Datetime) == 1).ToList().ForEach(m => m.BalanceBefore += moneySpentItem.ItemCost);
             account.MoneySpentItems.Remove(moneySpentItem);
             account.MoneySpentItems.Update();

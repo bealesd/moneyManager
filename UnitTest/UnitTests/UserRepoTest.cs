@@ -47,7 +47,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(null);
 
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            var isUserAdded = userRepo.AddUser(_user.Username);
+            var isUserAdded = userRepo.CreateUser(_user.Username);
 
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).MustHaveHappened(Repeated.Exactly.Times(1));
             A.CallTo(() => fakeReaderWriter.WriteEnumerable(A<string>.Ignored, A< IEnumerable<User>>.Ignored)).MustHaveHappened(Repeated.Exactly.Times(1));
@@ -62,7 +62,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(_users);
             
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            userRepo.AddAccount(_user.Username, accountGuid);
+            userRepo.AddAccountToUser(_user.Username, accountGuid);
 
             A.CallTo(() => fakeReaderWriter.WriteEnumerable(A<string>.Ignored, A<IEnumerable<User>>.Ignored)).MustHaveHappened(Repeated.Exactly.Times(1));
             Assert.That(1, Is.EqualTo(userRepo.GetUser(_user.Username).AccountGuid.Count));

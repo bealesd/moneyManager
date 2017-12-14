@@ -32,7 +32,7 @@ namespace UnitTest.IntegrationTests
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
 
             var username = "davebeales";
-            _userRepo.AddUser(username);
+            _userRepo.CreateUser(username);
 
             var users = _userRepo.GetAllUsers().ToList();
             var user = users.FirstOrDefault(u => u.Username == username);
@@ -46,10 +46,10 @@ namespace UnitTest.IntegrationTests
             _userRepo = new UserRepo(new JsonReaderWriter(), userPath);
 
             var david = "davebeales";
-            _userRepo.AddUser(david);
+            _userRepo.CreateUser(david);
 
             var bob = "bobMarley";
-            _userRepo.AddUser(bob);
+            _userRepo.CreateUser(bob);
 
             var users = _userRepo.GetAllUsers().ToList();
             var userDavid = users.FirstOrDefault(u => u.Username == david);
@@ -67,13 +67,13 @@ namespace UnitTest.IntegrationTests
             //_accountRepo = new AccountRepo(new JsonReaderWriter(), accountPath);
 
             //var david = "davebeales";
-            //_userRepo.AddUser(david);
+            //_userRepo.AddAccountToUser(david);
 
             //var users = _userRepo.GetAllUsers().ToList();
             //var userDavid = users.FirstOrDefault(u => u.Username == david);
 
-            //_accountRepo.CreateAccount("daveAccount", userDavid.UserGuid);
-            //var account = _accountRepo.GetAccount("daveAccount");
+            //_accountRepo.CreateMoneyAccount("daveAccount", userDavid.UserGuid);
+            //var account = _accountRepo.GetMoneyAccount("daveAccount");
             
             //Assert.AreEqual(account.UserGuid, userDavid.UserGuid);
         }
@@ -85,16 +85,16 @@ namespace UnitTest.IntegrationTests
             //_accountRepo = new AccountRepo(new JsonReaderWriter(), accountPath);
 
             //var david = "davebeales";
-            //_userRepo.AddUser(david);
+            //_userRepo.AddAccountToUser(david);
 
             //var users = _userRepo.GetAllUsers().ToList();
             //var userDavid = users.FirstOrDefault(u => u.Username == david);
 
-            //_accountRepo.CreateAccount("davidAccount", userDavid.UserGuid);
-            //_accountRepo.CreateAccount("davidAccount2", userDavid.UserGuid);
+            //_accountRepo.CreateMoneyAccount("davidAccount", userDavid.UserGuid);
+            //_accountRepo.CreateMoneyAccount("davidAccount2", userDavid.UserGuid);
 
-            //var davidAccount = _accountRepo.GetAccount("davidAccount");
-            //var davidAccount2 = _accountRepo.GetAccount("davidAccount2");
+            //var davidAccount = _accountRepo.GetMoneyAccount("davidAccount");
+            //var davidAccount2 = _accountRepo.GetMoneyAccount("davidAccount2");
 
             //Assert.AreEqual("davidAccount", davidAccount.AccountName);
             //Assert.AreEqual("davidAccount2", davidAccount2.AccountName);

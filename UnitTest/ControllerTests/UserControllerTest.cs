@@ -69,7 +69,7 @@ namespace UnitTest.ControllerTests
             var userController = new UserController(fakeAdapterRepo);
             var result = userController.PostUser(_user.Username) as RedirectToActionResult;
 
-            A.CallTo(() => fakeAdapterRepo.AddUser(_user.Username)).MustHaveHappened(Repeated.AtLeast.Times(1));
+            A.CallTo(() => fakeAdapterRepo.CreateUser(_user.Username)).MustHaveHappened(Repeated.AtLeast.Times(1));
             Assert.That("getuser", Is.EqualTo(result.ActionName.ToLower(CultureInfo.InvariantCulture)));
             Assert.That(_user.Username, Is.EqualTo(result.RouteValues["username"]));
         }
@@ -79,7 +79,7 @@ namespace UnitTest.ControllerTests
         {
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-            A.CallTo(() => fakeAdapterRepo.GetAccount(_user.Username, account.AccountName)).Returns(null);
+            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountName)).Returns(null);
             A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
 
             var controller = new UserController(fakeAdapterRepo);
@@ -96,7 +96,7 @@ namespace UnitTest.ControllerTests
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
             A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
-            A.CallTo(() => fakeAdapterRepo.GetAccount(_user.Username, account.AccountName)).Returns(account);
+            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountName)).Returns(account);
 
             var userController = new UserController(fakeAdapterRepo);
             var result = userController.GetMoneyAccount(_user.Username, account.AccountName) as ObjectResult;
@@ -111,12 +111,12 @@ namespace UnitTest.ControllerTests
         {
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa" };
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-            A.CallTo(() => fakeAdapterRepo.RemoveAccount(_user.Username, account.AccountName)).Returns(true);
+            A.CallTo(() => fakeAdapterRepo.DeleteMoneyAccount(_user.Username, account.AccountName)).Returns(true);
 
             var userController = new UserController(fakeAdapterRepo);
             var result = userController.DeleteMoneyAccount(_user.Username, account.AccountName) as RedirectToActionResult;
 
-            A.CallTo(() => fakeAdapterRepo.RemoveAccount(A<string>.Ignored, A<string>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => fakeAdapterRepo.DeleteMoneyAccount(A<string>.Ignored, A<string>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
             Assert.That("GetUser", Is.EqualTo(result.ActionName));
         }
     }

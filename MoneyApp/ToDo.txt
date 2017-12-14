@@ -1,7 +1,1 @@
-﻿A user has a Username, Guid and an AccountGuid.
-A account has a AccountName and an AccountGuid.
-So where is the account information stored, in an MoneySpentItem: amount, on what, an instance of the balance.
-MoneySpentItem will be a property of the account.
-
-1. Delete User in controller
-2. Stop items with same datetime being added.
+﻿

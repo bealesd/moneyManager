@@ -23,7 +23,7 @@ namespace MoneyApp.Controllers
             _adapterRepo = adapterRepo;
         }
 
-        // GET api/user
+        //api/user
         [HttpGet]
         public IActionResult GetUsers()
         {
@@ -31,7 +31,7 @@ namespace MoneyApp.Controllers
             return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
-        // GET api/user/dave
+        //api/user/dave
         [HttpGet("{username}")]
         public IActionResult GetUser(string username)
         {
@@ -46,13 +46,13 @@ namespace MoneyApp.Controllers
             }
         }
 
-        // POST api/user
+        //api/user/dave
         [HttpPost("{username}")]
         public IActionResult PostUser(string username)
         {
             try
             {
-                _adapterRepo.AddUser(username);
+                _adapterRepo.CreateUser(username);
                 return RedirectToAction(nameof(GetUser), new { username });
             }
             catch (Exception)
@@ -61,13 +61,19 @@ namespace MoneyApp.Controllers
             }
         }
 
+        //[HttpDelete("{username}")]
+        //public IActionResult RemoveAccountFromUser()
+        //{
+        //    _adapterRepo.
+        //}
+
         // PUT api/user/username/accountname
         [HttpPost("{username}/{accountName}")]
         public IActionResult CreateMoneyAccount(string username, string accountName)
         {
             try
             {
-                _adapterRepo.AddNewAccount(username, accountName);
+                _adapterRepo.CreateMoneyAccount(username, accountName);
                 return RedirectToAction(nameof(GetMoneyAccount), new { username, accountName });
             }
             catch (Exception)
@@ -81,7 +87,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                var account = _adapterRepo.GetAccount(username, accountName);
+                var account = _adapterRepo.GetMoneyAccount(username, accountName);
                 return true ? new ObjectResult(account) : BadRequest("Could Not Get Account");
                 return account != null ? new ObjectResult(account) : BadRequest("Could Not Get Account");
             }
@@ -97,7 +103,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                if (_adapterRepo.RemoveAccount(username, accountName))
+                if (_adapterRepo.DeleteMoneyAccount(username, accountName))
                     return RedirectToAction(nameof(GetUser), new {username});
                 return BadRequest("Could Not Delete Account");
             }
@@ -110,14 +116,14 @@ namespace MoneyApp.Controllers
         [HttpPost("{username}/{accountName}/addMoneyItem")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
         public IActionResult AddMoneySpentItem(string username, string accountName, [FromBody] MoneySpentItemDto model)
         {
-            var account = _adapterRepo.AddMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);
+            var account = _adapterRepo.CreateMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);
             return new ObjectResult(account);
         }
 
         [HttpDelete("{username}/{accountName}/{moneyItemGuid}")]
-        public IActionResult RemoveMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
+        public IActionResult DeleteMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
         {
-            var account = _adapterRepo.RemoveMoneySpentItem(username, accountName, moneyItemGuid);
+            var account = _adapterRepo.DeleteMoneySpentItem(username, accountName, moneyItemGuid);
             return new ObjectResult(account);
         }
     }

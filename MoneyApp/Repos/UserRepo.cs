@@ -36,7 +36,7 @@ namespace MoneyApp.Repos
                 _users = loadedUsers.ToList();
         }
 
-        public bool AddUser(string username)
+        public bool CreateUser(string username)
         {
             if (_users.Exists(u => u.Username == username) || !username.ValidUsername())
             {
@@ -54,7 +54,7 @@ namespace MoneyApp.Repos
             return true;
         }
 
-        public void AddAccount(string username, Guid accountGuid)
+        public void AddAccountToUser(string username, Guid accountGuid)
         {
             var user = _users.FirstOrDefault(u => u.Username == username);
             if (user == null)
@@ -87,7 +87,7 @@ namespace MoneyApp.Repos
             return true;
         }
 
-        public bool DeleteAccount(Guid accountGuid, string username)
+        public bool RemoveAccountFromUser(string username, Guid accountGuid)
         {
             var user = this.GetUser(username);
             if (Object.Equals(user, null))

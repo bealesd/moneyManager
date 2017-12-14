@@ -7,14 +7,16 @@ using MoneyApp.Models;
 
 namespace MoneyApp.Repos
 {
+
     public interface IUserRepo
     {
         IEnumerable<IUser> GetAllUsers();
         User GetUser(string username);
-        bool AddUser(string username);
+        bool CreateUser(string username);
+        bool DeleteUser(string username);
         void Save();
         void Load();
-        void AddAccount(string username, Guid accountGuid);
-        bool DeleteAccount(Guid accountGuid, string username);
+        void AddAccountToUser(string username, Guid accountGuid);
+        bool RemoveAccountFromUser(string username, Guid accountGuid);
     }
 }

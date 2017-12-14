@@ -32,9 +32,9 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<Account>(_path)).Returns(null);
 
             var accountRepo = new AccountRepo(fakeReaderWriter, _path);
-            var accountGuid = accountRepo.CreateAccount(_account.AccountName);
+            var accountGuid = accountRepo.CreateMoneyAccount(_account.AccountName);
 
-            Assert.That(_account.AccountName, Is.EqualTo(accountRepo.GetAccount(accountGuid).AccountName));
+            Assert.That(_account.AccountName, Is.EqualTo(accountRepo.GetMoneyAccount(accountGuid).AccountName));
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<Account>(_path)).Returns(_accounts);
 
             var accountRepo = new AccountRepo(fakeReaderWriter, _path);
-            var accountGuid = accountRepo.DeleteAccount(_account.AccountGuid);
+            var accountGuid = accountRepo.DeleteMoneyAccount(_account.AccountGuid);
         }
     }
 }
