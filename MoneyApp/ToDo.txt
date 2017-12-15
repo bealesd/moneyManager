@@ -6,3 +6,6 @@
 	- a form with a username
 - account overview view
 	- all user accounts shown, with a current balance & account name & activity colour bar (avg.transactions/6 mth, <1, 1-10, 10-100, 100+, white-red)
+
+
+User logins with username and user guid is used for all api calls.

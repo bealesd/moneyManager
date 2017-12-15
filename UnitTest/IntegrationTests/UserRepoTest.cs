@@ -72,7 +72,7 @@ namespace UnitTest.IntegrationTests
             //var users = _userRepo.GetAllUsers().ToList();
             //var userDavid = users.FirstOrDefault(u => u.Username == david);
 
-            //_accountRepo.CreateMoneyAccount("daveAccount", userDavid.UserGuid);
+            //_accountRepo.CreateMoneyAccountForUser("daveAccount", userDavid.UserGuid);
             //var account = _accountRepo.GetMoneyAccount("daveAccount");
             
             //Assert.AreEqual(account.UserGuid, userDavid.UserGuid);
@@ -90,8 +90,8 @@ namespace UnitTest.IntegrationTests
             //var users = _userRepo.GetAllUsers().ToList();
             //var userDavid = users.FirstOrDefault(u => u.Username == david);
 
-            //_accountRepo.CreateMoneyAccount("davidAccount", userDavid.UserGuid);
-            //_accountRepo.CreateMoneyAccount("davidAccount2", userDavid.UserGuid);
+            //_accountRepo.CreateMoneyAccountForUser("davidAccount", userDavid.UserGuid);
+            //_accountRepo.CreateMoneyAccountForUser("davidAccount2", userDavid.UserGuid);
 
             //var davidAccount = _accountRepo.GetMoneyAccount("davidAccount");
             //var davidAccount2 = _accountRepo.GetMoneyAccount("davidAccount2");

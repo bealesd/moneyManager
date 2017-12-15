@@ -11,12 +11,12 @@ namespace MoneyApp.Repos
     public interface IUserRepo
     {
         IEnumerable<IUser> GetAllUsers();
-        User GetUser(string username);
+        User GetUser(Guid userGuid);
         bool CreateUser(string username);
-        bool DeleteUser(string username);
+        bool DeleteUser(Guid userGuid);
         void Save();
         void Load();
-        void AddAccountToUser(string username, Guid accountGuid);
-        bool RemoveAccountFromUser(string username, Guid accountGuid);
+        void AddAccountToUser(Guid userGuid, Guid accountGuid);
+        bool RemoveAccountFromUser(Guid userGuid, Guid accountGuid);
     }
 }

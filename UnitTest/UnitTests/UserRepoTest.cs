@@ -35,7 +35,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(_users);
 
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            var result = userRepo.GetUser(_user.Username);
+            var result = userRepo.GetUser(_user.UserGuid);
 
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).MustHaveHappened(Repeated.Exactly.Once);
         }
@@ -62,10 +62,10 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(_users);
             
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            userRepo.AddAccountToUser(_user.Username, accountGuid);
+            userRepo.AddAccountToUser(_user.UserGuid, accountGuid);
 
             A.CallTo(() => fakeReaderWriter.WriteEnumerable(A<string>.Ignored, A<IEnumerable<User>>.Ignored)).MustHaveHappened(Repeated.Exactly.Times(1));
-            Assert.That(1, Is.EqualTo(userRepo.GetUser(_user.Username).AccountGuid.Count));
+            Assert.That(1, Is.EqualTo(userRepo.GetUser(_user.UserGuid).AccountGuid.Count));
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(_users);
 
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            var isUserDeleted = userRepo.DeleteUser(_user.Username);
+            var isUserDeleted = userRepo.DeleteUser(_user.UserGuid);
 
             Assert.That(true, Is.EqualTo(isUserDeleted));
         }

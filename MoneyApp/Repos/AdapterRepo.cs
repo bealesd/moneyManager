@@ -18,9 +18,9 @@ namespace MoneyApp.Repos
             _accountRepo = accountRepo;
         }
 
-        public IUser GetUser(string username)
+        public IUser GetUser(Guid userGuid)
         {// add a password, which is checked against a hashed table, if password/username correct return account Guids, which are hashed using the password.
-            return username == String.Empty ? null : _userRepo.GetUser(username);
+            return userGuid == Guid.Empty ? null : _userRepo.GetUser(userGuid);
         }
 
         public IEnumerable<IUser> GetAllUsers()
@@ -33,62 +33,68 @@ namespace MoneyApp.Repos
             return _userRepo.CreateUser(username);
         }
 
-        public bool DeleteUser(string username)
+        public bool DeleteUser(Guid userGuid)
         {
-            if (_userRepo.GetUser(username).AccountGuid.Count > 0)
+            var user = _userRepo.GetUser(userGuid);
+            if (user == null)
                 return false;
-            return _userRepo.DeleteUser(username);
+
+            if (user.AccountGuid.Count > 0)
+                return false;
+            return _userRepo.DeleteUser(userGuid);
         }
 
-        public IAccount GetMoneyAccount(string username, Guid accountGuid)
+        public IAccount GetMoneyAccount(Guid accountGuid)
         {
-            var user = _userRepo.GetUser(username);
-            if (user == null) return null;
-
             return _accountRepo.GetMoneyAccount(accountGuid);
         }
 
-        public bool CreateMoneyAccount(string username, string accountName)
+        public Guid CreateMoneyAccount(string accountName)
         {
-            User user = _userRepo.GetUser(username);
+            return _accountRepo.CreateMoneyAccount(accountName);
+        }
+
+        public bool CreateMoneyAccountForUser(Guid userGuid, string accountName)
+        {
+            User user = _userRepo.GetUser(userGuid);
             if (user == null)
                 return false;
-            
+
             if (user.AccountGuid.Any(guid => _accountRepo.GetMoneyAccount(guid).AccountName == accountName))
                 return false;
-            //why am i creating a user?
-            _userRepo.AddAccountToUser(username, _accountRepo.CreateMoneyAccount(accountName));
+
+            var accountGuid = CreateMoneyAccount(accountName);
+            _userRepo.AddAccountToUser(userGuid, accountGuid);
             return true;
         }
 
-        public bool DeleteMoneyAccount(string username, string accountName)
+        public bool DeleteMoneyAccount(Guid accountGuid)
         {
-            User user = _userRepo.GetUser(username);
+            return _accountRepo.DeleteMoneyAccount(accountGuid);
+        }
+
+        public bool RemoveMoneyAccountFromUser(Guid userGuid, Guid accountGuid)
+        {
+            User user = _userRepo.GetUser(userGuid);
             if (user == null)
                 return false;
 
-            Guid accountGuid =user.AccountGuid.FirstOrDefault(guid => _accountRepo.GetMoneyAccount(guid).AccountName == accountName);
-            if (accountGuid == Guid.Empty)
-            {
-                return false;
-            }
-            _userRepo.RemoveAccountFromUser(username, accountGuid);
-            _accountRepo.DeleteMoneyAccount(accountGuid);
+            _userRepo.RemoveAccountFromUser(userGuid, accountGuid);
             return true;
         }
 
-        public IAccount CreateMoneySpentItem(string username, Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
+        public IAccount CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
-            var account = this.GetMoneyAccount(username, accountGuid);
+            var account = this.GetMoneyAccount(accountGuid);
             if (Object.Equals(account, null))
                 return null;
             _accountRepo.CreateMoneySpentItem(account.AccountGuid, itemName, itemCost, dateTime);
             return account;
         }
 
-        public IAccount DeleteMoneySpentItem(string username, Guid accountGuid, Guid moneyItemGuid)
+        public IAccount DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
-            var account = this.GetMoneyAccount(username, accountGuid);
+            var account = this.GetMoneyAccount(accountGuid);
             if (Object.Equals(account, null))
                 return null;
             _accountRepo.DeleteMoneySpentItem(account.AccountGuid, moneyItemGuid);

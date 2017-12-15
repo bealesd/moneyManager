@@ -38,7 +38,7 @@ namespace MoneyApp.Repos
 
         public bool CreateUser(string username)
         {
-            if (_users.Exists(u => u.Username == username) || !username.ValidUsername())
+            if (_users.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
             {
                 return false;
             }
@@ -54,13 +54,11 @@ namespace MoneyApp.Repos
             return true;
         }
 
-        public void AddAccountToUser(string username, Guid accountGuid)
+        public void AddAccountToUser(Guid userGuid, Guid accountGuid)
         {
-            var user = _users.FirstOrDefault(u => u.Username == username);
+            var user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
             if (user == null)
-            {
                 return;
-            }
             user.AccountGuid.Add(accountGuid);
             Save();
         }
@@ -70,26 +68,25 @@ namespace MoneyApp.Repos
             return _users;
         }
 
-        public User GetUser(string username)
+        public User GetUser(Guid userGuid)
         {
-            User user = _users.FirstOrDefault(u => String.Equals(u.Username, username,
-                                                    StringComparison.InvariantCultureIgnoreCase));
+            User user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
             return user;
         }
 
-        public bool DeleteUser(string username)
+        public bool DeleteUser(Guid userGuid)
         {
-            var user = this.GetUser(username);
-            if (user.Equals(null))
+            var user = this.GetUser(userGuid);
+            if (Object.Equals(user, null))
                 return false;
             _users.Remove(user);
             Save();
             return true;
         }
 
-        public bool RemoveAccountFromUser(string username, Guid accountGuid)
+        public bool RemoveAccountFromUser(Guid userGuid, Guid accountGuid)
         {
-            var user = this.GetUser(username);
+            var user = this.GetUser(userGuid);
             if (Object.Equals(user, null))
                 return false;
             if (user.AccountGuid.FirstOrDefault(g => g == accountGuid) == Guid.Empty)
