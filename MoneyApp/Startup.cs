@@ -54,7 +54,7 @@ namespace MoneyApp
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=UserManagement}/{action=Index}");
+                    template: "{controller=UserManagement}/{action=Login}");
             });
 
             app.UseSwagger();

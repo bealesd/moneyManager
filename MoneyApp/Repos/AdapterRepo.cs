@@ -28,7 +28,7 @@ namespace MoneyApp.Repos
             return _userRepo.GetAllUsers();
         }
 
-        public bool CreateUser(string username)
+        public Guid CreateUser(string username)
         {
             return _userRepo.CreateUser(username);
         }

@@ -63,12 +63,12 @@ namespace UnitTest.UnitTests
         [Test]
         public void Add_User_Returns_A_User()
         {
-            A.CallTo(() => _fakeIUserRepo.CreateUser(_user.Username)).Returns(true);
+            A.CallTo(() => _fakeIUserRepo.CreateUser(_user.Username)).Returns(_user.UserGuid);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isUserAdded = adapterRepo.CreateUser(_user.Username);
+            var userGuid = adapterRepo.CreateUser(_user.Username);
 
-            Assert.That(true, Is.EqualTo(isUserAdded));
+            Assert.That(_user.UserGuid, Is.EqualTo(userGuid));
         }
 
         [Test]

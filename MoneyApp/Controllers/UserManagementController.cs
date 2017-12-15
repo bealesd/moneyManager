@@ -18,16 +18,24 @@ namespace MoneyApp.Controllers
             _apiPath = "http://localhost:37266/api";
             _client = new HttpClient();
         }
-        public IActionResult Index()
+        public IActionResult Login()
         {
-            return View("Index", null);
+            return View("Login");
         }
 
-        public IActionResult LoadAccountUserView(string username)
+        public IActionResult CreateUser(string username)
         {
-            var httpResponse =  _client.GetAsync($"{_apiPath}/user/{username}").Result;
+            string path = $"{_apiPath}/user/{username}";
+            var httpResponse = _client.PostAsync(path, null).Result;
+            LoadAccountUserView()
+            return View("AccountsOverview", httpResponse.Content.ReadAsAsync<Guid>().Result);
+        }
+
+        public IActionResult LoadAccountUserView(Guid userGuid)
+        {
+            var httpResponse =  _client.GetAsync($"{_apiPath}/user/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                return View("Index", httpResponse.Content.ReadAsStringAsync().Result);
+                return View("Login", httpResponse.Content.ReadAsStringAsync().Result);
 
             var user = httpResponse.Content.ReadAsAsync<User>().Result;
 

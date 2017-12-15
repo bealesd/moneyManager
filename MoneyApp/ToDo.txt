@@ -8,4 +8,5 @@
 	- all user accounts shown, with a current balance & account name & activity colour bar (avg.transactions/6 mth, <1, 1-10, 10-100, 100+, white-red)
 
 
-User logins with username and user guid is used for all api calls.
+A user post a username and a password, their Guid is then hashed and can only be unlocked using there username and password.
+jwt (jot) tokens

@@ -36,11 +36,11 @@ namespace MoneyApp.Repos
                 _users = loadedUsers.ToList();
         }
 
-        public bool CreateUser(string username)
+        public Guid CreateUser(string username)
         {
             if (_users.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
             {
-                return false;
+                return Guid.Empty;
             }
 
             var newUser = new User()
@@ -51,7 +51,7 @@ namespace MoneyApp.Repos
             };
             _users.Add(newUser);
             Save();
-            return true;
+            return newUser.UserGuid;
         }
 
         public void AddAccountToUser(Guid userGuid, Guid accountGuid)

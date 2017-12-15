@@ -53,7 +53,7 @@ namespace MoneyApp.Controllers
             try
             {
                 var result =_adapterRepo.CreateUser(username);
-                if (result)
+                if (result != Guid.Empty)
                     return RedirectToAction(nameof(GetUser), new { username });
                 return BadRequest("Could Not Create User");
             }
@@ -94,8 +94,7 @@ namespace MoneyApp.Controllers
             try
             {
                 var account = _adapterRepo.GetMoneyAccount(accountGuid);
-                return true ? new ObjectResult(account) : BadRequest("Could Not Get Account");
-                return account != null ? new ObjectResult(account) : BadRequest("Could Not Get Account");
+                return Object.Equals(account, null) ?  BadRequest("Could Not Get Account") : new ObjectResult(account);
             }
             catch (Exception)
             {

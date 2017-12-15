@@ -47,11 +47,10 @@ namespace UnitTest.UnitTests
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).Returns(null);
 
             var userRepo = new UserRepo(fakeReaderWriter, _path);
-            var isUserAdded = userRepo.CreateUser(_user.Username);
+            var userGuid = userRepo.CreateUser(_user.Username);
 
             A.CallTo(() => fakeReaderWriter.ReadEnumerable<User>(_path)).MustHaveHappened(Repeated.Exactly.Times(1));
             A.CallTo(() => fakeReaderWriter.WriteEnumerable(A<string>.Ignored, A< IEnumerable<User>>.Ignored)).MustHaveHappened(Repeated.Exactly.Times(1));
-            Assert.That(true, Is.EqualTo(isUserAdded));
         }
 
         [Test]
