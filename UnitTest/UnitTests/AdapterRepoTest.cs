@@ -79,7 +79,7 @@ namespace UnitTest.UnitTests
             A.CallTo(() => _fakeIAccountRepo.GetMoneyAccount(_user.AccountGuid[0])).Returns(account);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var davesAccount = adapterRepo.GetMoneyAccount(_user.Username, account.AccountName);
+            var davesAccount = adapterRepo.GetMoneyAccount(_user.Username, account.AccountGuid);
 
             Assert.That(account.AccountGuid, Is.EqualTo(davesAccount.AccountGuid));
         }

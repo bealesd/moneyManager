@@ -88,11 +88,11 @@ namespace MoneyApp.Controllers
         }
 
         [HttpGet("{username}/{accountName}")]
-        public IActionResult GetMoneyAccount(string username, string accountName)
+        public IActionResult GetMoneyAccount(string username, Guid accountGuid)
         {
             try
             {
-                var account = _adapterRepo.GetMoneyAccount(username, accountName);
+                var account = _adapterRepo.GetMoneyAccount(username, accountGuid);
                 return true ? new ObjectResult(account) : BadRequest("Could Not Get Account");
                 return account != null ? new ObjectResult(account) : BadRequest("Could Not Get Account");
             }
@@ -119,16 +119,16 @@ namespace MoneyApp.Controllers
         }
 
         [HttpPost("{username}/{accountName}/addMoneyItem")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
-        public IActionResult AddMoneySpentItem(string username, string accountName, [FromBody] MoneySpentItemDto model)
+        public IActionResult AddMoneySpentItem(string username, Guid accountGuid, [FromBody] MoneySpentItemDto model)
         {
-            var account = _adapterRepo.CreateMoneySpentItem(username, accountName, model.ItemName, model.ItemCost, model.DateTime);
+            var account = _adapterRepo.CreateMoneySpentItem(username, accountGuid, model.ItemName, model.ItemCost, model.DateTime);
             return new ObjectResult(account);
         }
 
         [HttpDelete("{username}/{accountName}/{moneyItemGuid}")]
-        public IActionResult DeleteMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
+        public IActionResult DeleteMoneySpentItem(string username, Guid accountGuid, Guid moneyItemGuid)
         {
-            var account = _adapterRepo.DeleteMoneySpentItem(username, accountName, moneyItemGuid);
+            var account = _adapterRepo.DeleteMoneySpentItem(username, accountGuid, moneyItemGuid);
             return new ObjectResult(account);
         }
     }

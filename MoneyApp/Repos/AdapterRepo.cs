@@ -40,13 +40,10 @@ namespace MoneyApp.Repos
             return _userRepo.DeleteUser(username);
         }
 
-        public IAccount GetMoneyAccount(string username, string accountName)
+        public IAccount GetMoneyAccount(string username, Guid accountGuid)
         {
             var user = _userRepo.GetUser(username);
             if (user == null) return null;
-
-            Guid accountGuid = user.AccountGuid.FirstOrDefault(guid => _accountRepo.GetMoneyAccount(guid).AccountName == accountName);
-            if (accountGuid == Guid.Empty) return null;
 
             return _accountRepo.GetMoneyAccount(accountGuid);
         }
@@ -80,18 +77,18 @@ namespace MoneyApp.Repos
             return true;
         }
 
-        public IAccount CreateMoneySpentItem(string username, string accountName, string itemName, float itemCost, DateTime dateTime)
+        public IAccount CreateMoneySpentItem(string username, Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
-            var account = this.GetMoneyAccount(username, accountName);
+            var account = this.GetMoneyAccount(username, accountGuid);
             if (Object.Equals(account, null))
                 return null;
             _accountRepo.CreateMoneySpentItem(account.AccountGuid, itemName, itemCost, dateTime);
             return account;
         }
 
-        public IAccount DeleteMoneySpentItem(string username, string accountName, Guid moneyItemGuid)
+        public IAccount DeleteMoneySpentItem(string username, Guid accountGuid, Guid moneyItemGuid)
         {
-            var account = this.GetMoneyAccount(username, accountName);
+            var account = this.GetMoneyAccount(username, accountGuid);
             if (Object.Equals(account, null))
                 return null;
             _accountRepo.DeleteMoneySpentItem(account.AccountGuid, moneyItemGuid);

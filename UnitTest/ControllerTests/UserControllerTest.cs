@@ -80,7 +80,7 @@ namespace UnitTest.ControllerTests
         {
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountName)).Returns(null);
+            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountGuid)).Returns(null);
             A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
 
             var controller = new UserController(fakeAdapterRepo);
@@ -97,10 +97,10 @@ namespace UnitTest.ControllerTests
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa"};
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
             A.CallTo(() => fakeAdapterRepo.GetUser(_user.Username)).Returns(_user);
-            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountName)).Returns(account);
+            A.CallTo(() => fakeAdapterRepo.GetMoneyAccount(_user.Username, account.AccountGuid)).Returns(account);
 
             var userController = new UserController(fakeAdapterRepo);
-            var result = userController.GetMoneyAccount(_user.Username, account.AccountName) as ObjectResult;
+            var result = userController.GetMoneyAccount(_user.Username, account.AccountGuid) as ObjectResult;
             var accountResult = result.Value as Account;
 
             Assert.That(account.AccountGuid, Is.EqualTo(accountResult.AccountGuid));
