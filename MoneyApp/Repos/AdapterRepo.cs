@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MoneyApp.Interfaces;
 using MoneyApp.Models;
 
@@ -11,16 +10,24 @@ namespace MoneyApp.Repos
     {
         private IUserRepo _userRepo;
         private IAccountRepo _accountRepo;
+        private UserLoginRepo _userLoginRepo;
 
-        public AdapterRepo(IUserRepo userRepo, IAccountRepo accountRepo)
+        public AdapterRepo(IUserRepo userRepo, IAccountRepo accountRepo, UserLoginRepo userLoginRepo)
         {
             _userRepo = userRepo;
             _accountRepo = accountRepo;
+            _userLoginRepo = userLoginRepo;
         }
 
         public IUser GetUser(Guid userGuid)
-        {// add a password, which is checked against a hashed table, if password/username correct return account Guids, which are hashed using the password.
+        {
             return userGuid == Guid.Empty ? null : _userRepo.GetUser(userGuid);
+        }
+
+        public IUser UserLogin(string username)
+        {// add a password, which is checked against a hashed table, if password/username correct return account Guids, which are hashed using the password.
+            var userGuid = _userLoginRepo.GetUserGuid(username);
+            return GetUser(userGuid);
         }
 
         public IEnumerable<IUser> GetAllUsers()
@@ -30,7 +37,12 @@ namespace MoneyApp.Repos
 
         public Guid CreateUser(string username)
         {
-            return _userRepo.CreateUser(username);
+            var userGuid = _userRepo.CreateUser(username);
+
+            if (userGuid != Guid.Empty)
+                _userLoginRepo.CreateUser(username, userGuid);
+
+            return userGuid;
         }
 
         public bool DeleteUser(Guid userGuid)

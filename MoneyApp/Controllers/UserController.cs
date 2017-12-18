@@ -32,12 +32,12 @@ namespace MoneyApp.Controllers
         }
 
         //api/user/dave
-        [HttpGet("{userGuid}")]
-        public IActionResult GetUser(Guid userGuid)
+        [HttpGet("{username}")]
+        public IActionResult GetUser(string username)
         {
             try
             {
-                var user = _adapterRepo.GetUser(userGuid);
+                var user = _adapterRepo.UserLogin(username);
                 return user == null ? BadRequest("Could Not Get User") : new ObjectResult(user);
             }
             catch (Exception)

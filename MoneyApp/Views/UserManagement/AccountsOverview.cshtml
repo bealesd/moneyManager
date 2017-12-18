@@ -1,11 +1,38 @@
-﻿@model MoneyApp.Models.User
+﻿@model MoneyApp.Dto.UserDto
 
 @{
     ViewBag.Title = "Accounts Overview";
 }
 
-<p>@Model.Username:  @Model.UserGuid</p>
+
 
 <div class="row">
+    <div class="col-xs-12">
+        <h3 class="text-center">Welcome: @Model.Username</h3>
+        <br/>
+    </div>
 
+    <div class="col-xs-6">
+        <p>Account Name </p>
+    </div>
+    <div class="col-xs-6">
+        <p>Current Balance</p>
+    </div>
+
+    @foreach (var account in Model.Accounts)
+    {
+        <div class="col-xs-5">
+            <p>@account.AccountName</p>
+        </div>
+        <div class="col-xs-5">
+            <p>@account.AccountBalance</p>
+        </div>
+        <div class="col-xs-2">
+            <form asp-action="LoadAccountView", asp-route-accountGuid =@account.AccountGuid>
+                <label>Details</label>
+                <button class="btn">Submit</button>
+            </form>
+        </div>
+
+    }
 </div>

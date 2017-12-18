@@ -1,0 +1,17 @@
+﻿@model MoneyApp.Models.Account
+    
+<div class="row">
+    <p>@Model.AccountName</p>
+    <p>@Model.AccountBalance</p>
+    @foreach (var moneySpentItem in Model.MoneySpentItems)
+    {
+        <div class="col-xs-12">
+            <p>@moneySpentItem.ItemName</p>
+            <p>@moneySpentItem.ItemCost</p>
+            <p>@moneySpentItem.BalanceBefore</p>
+            <p>@moneySpentItem.BalanceAfter</p>
+            <p>@moneySpentItem.Datetime</p>
+        </div>
+    }
+</div>
+

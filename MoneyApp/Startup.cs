@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MoneyApp.IO;
 using MoneyApp.Repos;
-using MoneyApp.Helper;
 using MoneyApp.Interfaces;
+using MoneyApp.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace MoneyApp
@@ -31,15 +23,20 @@ namespace MoneyApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+                //.AddSessionStateTempDataProvider();
+
+            //services.AddSession();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
-
 
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
                                                         new UserRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("users.txt")), 
-                                                        new AccountRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("account.txt"))
+                                                        new AccountRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("account.txt")),
+                                                        new UserLoginRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("userCredentials.txt"))
                                                     ));
+            //services.AddSingleton<ISessionHandler>();
+            services.AddSingleton<IUserApiService>(new UserApiService());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,11 +47,14 @@ namespace MoneyApp
                 app.UseDeveloperExceptionPage();
             }
 
+            //app.UseStaticFiles();
+            //app.UseSession();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=UserManagement}/{action=Login}");
+                    template: "{controller=UserManagementController}/{action=Login}");
             });
 
             app.UseSwagger();
