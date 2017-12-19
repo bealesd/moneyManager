@@ -7,7 +7,7 @@ using Microsoft.Data.OData;
 
 namespace MoneyApp.Helper
 {
-    public class Helper
+    public class PathHelper
     {
         public string TempPath(string fileName)
         {

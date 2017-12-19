@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
-using MoneyApp.Models;
-using MoneyApp.Repos;
-using Newtonsoft.Json.Linq;
 
 namespace MoneyApp.Controllers
 {
@@ -18,7 +10,7 @@ namespace MoneyApp.Controllers
     {
         private IAdapterRepo _adapterRepo;
 
-        public UserController( IAdapterRepo adapterRepo)
+        public UserController(IAdapterRepo adapterRepo)
         {
             _adapterRepo = adapterRepo;
         }
@@ -27,7 +19,6 @@ namespace MoneyApp.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
-            Console.WriteLine(DateTime.Now);
             return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
@@ -52,10 +43,8 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                var result =_adapterRepo.CreateUser(username);
-                if (result != Guid.Empty)
-                    return RedirectToAction(nameof(GetUser), new { username });
-                return BadRequest("Could Not Create User");
+                _adapterRepo.CreateUser(username);
+                return RedirectToAction(nameof(GetUser), new { username });
             }
             catch (Exception)
             {
@@ -66,10 +55,15 @@ namespace MoneyApp.Controllers
         [HttpDelete("{userGuid}")]
         public IActionResult DeleteUser(Guid userGuid)
         {
-            var result = _adapterRepo.DeleteUser(userGuid);
-            if (result)
+            try
+            {
+                _adapterRepo.DeleteUser(userGuid);
                 return RedirectToAction(nameof(GetUsers));
-            return BadRequest("Could Not Delete User");
+            }
+            catch (Exception)
+            {
+                return BadRequest("Could Not Delete User");
+            }
         }
 
         // PUT api/user/username/accountname
@@ -78,9 +72,8 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                if (_adapterRepo.CreateMoneyAccountForUser(userGuid, accountName))
-                    return RedirectToAction(nameof(GetUser), new { userGuid });
-                return BadRequest("Could Not Create Account");
+                _adapterRepo.CreateMoneyAccountForUser(userGuid, accountName);
+                return RedirectToAction(nameof(GetUser), new { userGuid });
             }
             catch (Exception)
             {
@@ -93,8 +86,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                var account = _adapterRepo.GetMoneyAccount(accountGuid);
-                return Object.Equals(account, null) ?  BadRequest("Could Not Get Account") : new ObjectResult(account);
+                return new ObjectResult(_adapterRepo.GetMoneyAccount(accountGuid));
             }
             catch (Exception)
             {
@@ -108,9 +100,8 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                if (_adapterRepo.RemoveMoneyAccountFromUser(userGuid, accountGuid))
-                    return RedirectToAction(nameof(GetUser), new { userGuid});
-                return BadRequest("Could Not Delete Account");
+                _adapterRepo.RemoveMoneyAccountFromUser(userGuid, accountGuid);
+                return RedirectToAction(nameof(GetUser), new { userGuid });
             }
             catch (Exception)
             {
@@ -121,15 +112,29 @@ namespace MoneyApp.Controllers
         [HttpPost("account/{accountGuid}")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
         public IActionResult AddMoneySpentItem(Guid accountGuid, [FromBody] MoneySpentItemDto model)
         {
-            var account = _adapterRepo.CreateMoneySpentItem(accountGuid, model.ItemName, model.ItemCost, model.DateTime);
-            return new ObjectResult(account);
+            try
+            {
+                _adapterRepo.CreateMoneySpentItem(accountGuid, model.ItemName, model.ItemCost, model.DateTime);
+                return RedirectToAction(nameof(GetMoneyAccount), accountGuid);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Could Not Create Money Item");
+            }
         }
 
         [HttpDelete("account/{accountGuid}/{moneyItemGuid}")]
         public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
-            var account = _adapterRepo.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
-            return new ObjectResult(account);
+            try
+            {
+                _adapterRepo.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
+                return RedirectToAction(nameof(GetMoneyAccount), accountGuid);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Could Not Delete Money Item");
+            }
         }
     }
 }

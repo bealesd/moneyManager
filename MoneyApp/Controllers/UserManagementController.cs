@@ -16,18 +16,15 @@ namespace MoneyApp.Controllers
         private HttpClient _client;
         private IUserApiService _userApiService;
 
-        //private ISessionHandler _sessionHandler;
-
-        public UserManagementController(IUserApiService userApiService)//ISessionHandler sessionHandler)
+        public UserManagementController(IUserApiService userApiService)
         {
             _apiPath = "http://localhost:37266/api";
             _client = new HttpClient();
             _userApiService = userApiService;
-            //_sessionHandler = sessionHandler;
         }
         public IActionResult Login()
         {
-            return View("Login");
+            return View("LoginView");
         }
 
         public IActionResult RegisterUser(string username)//string password
@@ -35,54 +32,59 @@ namespace MoneyApp.Controllers
             try
             {
                 _userApiService.CreateUser(username);
-                return RedirectToAction(nameof(LoadAccountUserView), new { username });
+                return RedirectToAction(nameof(LoadUserAccountsView), new { username });
             }
             catch (Exception)
             {
-                return View("Login");
+                return View("LoginView");
             }
         }
 
-        public IActionResult LoadAccountUserView(string username)//string password
+        public IActionResult LoadUserAccountsView(string username)//string password
         {
-            //var userDto = UserApiService.GetUser(username)
-            //if error: return View("Login", httpResponse.Content.ReadAsStringAsync().Result);
-            //else: return View("AccountsOverview", userDto);
-
-            var httpResponse =  _client.GetAsync($"{_apiPath}/user/{username}").Result;
-            if (!httpResponse.IsSuccessStatusCode)
-                return View("Login", httpResponse.Content.ReadAsStringAsync().Result);
-
-            var user = httpResponse.Content.ReadAsAsync<User>().Result;
-            var userDto = CreateUserDto(user);
-
-            //_sessionHandler.UpdateSessionHandler(ControllerContext.HttpContext);
-            //_sessionHandler.SetSessionString("userGuid", user.UserGuid.ToString());
-
-            return View("AccountsOverview", userDto);
+            try
+            {
+                return View("AccountsOverview", _userApiService.GetUserDto(username));
+            }
+            catch (Exception)
+            {
+                return View("LoginView");
+            }
         }
 
         public IActionResult LoadAccountView(Guid accountGuid)
         {
-            //var userGuid = Guid.Parse(_sessionHandler.GetSessionString("userGuid"));
-            var account = LoadAnAccount(accountGuid);
+            var account = _userApiService.LoadAnAccount(accountGuid);
             return View("AccountView", account);
         }
 
-        public UserDto CreateUserDto(User user)
+        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName)
         {
-            var userDto = new UserDto() {Username = user.Username, UserGuid = user.UserGuid, Accounts = new List<Account>()};
-            user.AccountGuid.ForEach(guid => userDto.Accounts.Add(LoadAnAccount(guid)));
-            return userDto;
+            try
+            {
+                var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = DateTime.Now };
+                _userApiService.CreateMoneySpentItem(accountGuid, moneySpentItem);
+                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+            }
+
         }
 
-        private Account LoadAnAccount(Guid accountGuid)
+        public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
-            var httpResponse = _client.GetAsync($"{_apiPath}/user/account/{accountGuid}").Result;
-            if (!httpResponse.IsSuccessStatusCode)
-                return null;
-            var account = httpResponse.Content.ReadAsAsync<Account>().Result;
-            return account;
+            try
+            {
+                _userApiService.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
+                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+            }
+
         }
     }
 }

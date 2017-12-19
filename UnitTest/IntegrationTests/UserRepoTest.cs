@@ -13,8 +13,8 @@ namespace UnitTest.IntegrationTests
     {
         private IUserRepo _userRepo;
         private IAccountRepo _accountRepo;
-        private string userPath = new MoneyApp.Helper.Helper().TempPath("UsersTest.txt");
-        private string accountPath = new MoneyApp.Helper.Helper().TempPath("AccountTest.txt");
+        private string userPath = new MoneyApp.Helper.PathHelper().TempPath("UsersTest.txt");
+        private string accountPath = new MoneyApp.Helper.PathHelper().TempPath("AccountTest.txt");
 
         [SetUp]
         [TearDown]

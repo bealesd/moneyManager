@@ -13,10 +13,10 @@ namespace MoneyApp.Repos
         IEnumerable<IUser> GetAllUsers();
         User GetUser(Guid userGuid);
         Guid CreateUser(string username);
-        bool DeleteUser(Guid userGuid);
+        void DeleteUser(Guid userGuid);
         void Save();
         void Load();
         void AddAccountToUser(Guid userGuid, Guid accountGuid);
-        bool RemoveAccountFromUser(Guid userGuid, Guid accountGuid);
+        void RemoveAccountFromUser(Guid userGuid, Guid accountGuid);
     }
 }

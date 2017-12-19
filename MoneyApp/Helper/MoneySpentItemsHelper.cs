@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MoneyApp.Models;
 
 namespace MoneyApp.Helper
@@ -7,7 +8,15 @@ namespace MoneyApp.Helper
     {
         public static void Update(this List<MoneySpentItem> moneySpentItems)
         {
-            moneySpentItems.Sort((IComparer<MoneySpentItem>) new MoneySpentItemComparer());
+            moneySpentItems.ForEach(m =>
+            {
+                if (Single.IsNaN(m.ItemCost))
+                {
+                    moneySpentItems.Remove(m);
+                }
+            });
+
+            moneySpentItems.Sort(new MoneySpentItemComparer());
             foreach (var item in moneySpentItems)
             {
                 var index = moneySpentItems.IndexOf(item);

@@ -39,9 +39,7 @@ namespace MoneyApp.Repos
         public Guid CreateUser(string username)
         {
             if (_users.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
-            {
-                return Guid.Empty;
-            }
+                throw new Exception();
 
             var newUser = new User()
             {
@@ -58,7 +56,7 @@ namespace MoneyApp.Repos
         {
             var user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
             if (user == null)
-                return;
+                throw new Exception();
             user.AccountGuid.Add(accountGuid);
             Save();
         }
@@ -71,31 +69,18 @@ namespace MoneyApp.Repos
         public User GetUser(Guid userGuid)
         {
             User user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
-            return user;
+            return Equals(user, null) ? throw new Exception() : user;
         }
 
-        public bool DeleteUser(Guid userGuid)
+        public void DeleteUser(Guid userGuid)
         {
-            var user = this.GetUser(userGuid);
-            if (Object.Equals(user, null))
-                return false;
-            _users.Remove(user);
+            _users.Remove(this.GetUser(userGuid));//ArguementNullException
             Save();
-            return true;
         }
 
-        public bool RemoveAccountFromUser(Guid userGuid, Guid accountGuid)
+        public void RemoveAccountFromUser(Guid userGuid, Guid accountGuid)
         {
-            var user = this.GetUser(userGuid);
-            if (Object.Equals(user, null))
-                return false;
-            if (user.AccountGuid.FirstOrDefault(g => g == accountGuid) == Guid.Empty)
-            {
-                return false;
-            }
-            
-            user.AccountGuid.Remove(accountGuid);
-            return true;
+            this.GetUser(userGuid).AccountGuid.Remove(accountGuid);//ArguementNullException
         }
     }
 }

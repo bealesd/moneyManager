@@ -12,7 +12,7 @@ namespace MoneyApp.Repos
         Account GetMoneyAccount(Guid accountGuid);
         Account CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime);
         Account DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
-        bool DeleteMoneyAccount(Guid accountGuid);
+        void DeleteMoneyAccount(Guid accountGuid);
         void Load();
         void Save();
     }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MoneyApp.Helper;
 using MoneyApp.IO;
 using MoneyApp.Repos;
 using MoneyApp.Interfaces;
@@ -31,9 +32,9 @@ namespace MoneyApp
 
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
-                                                        new UserRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("users.txt")), 
-                                                        new AccountRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("account.txt")),
-                                                        new UserLoginRepo(new JsonReaderWriter(), new Helper.Helper().TempPath("userCredentials.txt"))
+                                                        new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")), 
+                                                        new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt")),
+                                                        new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt"))
                                                     ));
             //services.AddSingleton<ISessionHandler>();
             services.AddSingleton<IUserApiService>(new UserApiService());

@@ -10,7 +10,9 @@ namespace MoneyApp.Interfaces
     public interface IUserApiService
     {
         IUser CreateUser(string username);
-        UserDto GetUser(string username);
+        UserDto GetUserDto(string username);
         Account LoadAnAccount(Guid accountGuid);
+        void CreateMoneySpentItem(Guid accouGuid, MoneySpentItemDto moneySpentItem);
+        void DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
     }
 }

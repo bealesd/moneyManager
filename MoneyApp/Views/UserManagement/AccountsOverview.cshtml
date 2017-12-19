@@ -11,28 +11,36 @@
         <h3 class="text-center">Welcome: @Model.Username</h3>
         <br/>
     </div>
-
-    <div class="col-xs-6">
-        <p>Account Name </p>
-    </div>
-    <div class="col-xs-6">
-        <p>Current Balance</p>
-    </div>
-
-    @foreach (var account in Model.Accounts)
+    
+    <table class="table">
+        <thread>
+            <tr>
+                <th>Account</th>
+                <th>Balance</th>
+            </tr>
+        </thread>
+        
+   @foreach (var account in Model.Accounts)
     {
-        <div class="col-xs-5">
-            <p>@account.AccountName</p>
-        </div>
-        <div class="col-xs-5">
-            <p>@account.AccountBalance</p>
-        </div>
-        <div class="col-xs-2">
-            <form asp-action="LoadAccountView", asp-route-accountGuid =@account.AccountGuid>
-                <label>Details</label>
-                <button class="btn">Submit</button>
-            </form>
-        </div>
+        <tr>
+            <th>@account.AccountName</th>
 
+            @if (account.AccountBalance < 0)
+            {
+                <th>@Math.Abs(account.AccountBalance) dr</th>
+            }
+            @if (account.AccountBalance >= 0)
+            {
+                <th>@Math.Abs(account.AccountBalance) cr</th>
+            }
+            
+            <th class="col-xs-2">
+                <form asp-action="LoadAccountView", asp-route-accountGuid =@account.AccountGuid>
+                    <button class="btn">Details</button>
+                </form>
+            </th>
+        </tr>
     }
+    </table>
+
 </div>

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace MoneyApp.Helper
 {
@@ -8,6 +9,11 @@ namespace MoneyApp.Helper
         {
             Regex regex = new Regex(@"^[a-zA-Z0-9_-]{7,15}$");
             return regex.IsMatch(username);
+        }
+
+        public static bool ValidFloat(this float amount)
+        {
+            return Single.IsNaN(amount) || amount == 0 ? false: true;
         }
     }
 }
