@@ -1,84 +1,80 @@
 ﻿@model MoneyApp.Models.Account
 
 <div class="row">
-    <h2>@Model.AccountName</h2>
-    @if (Model.AccountBalance < 0)
-    {
-        <h3>Balance: @Math.Abs(Model.AccountBalance) dr</h3>
-    }
-    @if (Model.AccountBalance >= 0)
-    {
-        <h3>Balance: @Math.Abs(Model.AccountBalance) cr</h3>
-    }
+    <div class="col-xs-offset-3 col-xs-6 loginBox">
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+                <h2>@Model.AccountName</h2>
+                @if (Model.AccountBalance < 0)
+                {
+                    <h3>Balance: @Math.Abs(Model.AccountBalance) dr</h3>
+                }
+                @if (Model.AccountBalance >= 0)
+                {
+                    <h3>Balance: @Math.Abs(Model.AccountBalance) cr</h3>
+                }
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>When</th>
-            <th>Item</th>
-            <th>Cost</th>
-            <th>Balance</th>
-            <th>Delete</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var moneySpentItem in Model.MoneySpentItems)
-        {
-            if (@moneySpentItem.ItemCost > 0)
-            {
-                <tr class="danger">
-                    <td>@moneySpentItem.Datetime</td>
-                    <td>@moneySpentItem.ItemName</td>
-                    <td>@Math.Abs(moneySpentItem.ItemCost) DR</td>
-                    <td>@moneySpentItem.BalanceAfter </td>
-                    <td><a  asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid", asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
-                </tr>
-            }
-            else
-            {
-                <tr class="success">
-                    <td>@moneySpentItem.Datetime</td>
-                    <td>@moneySpentItem.ItemName</td>
-                    <td>@Math.Abs(moneySpentItem.ItemCost) CR</td>
-                    <td>@moneySpentItem.BalanceAfter</td>
-                    <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
-                </tr>
-            }
-        }
-        </tbody>
-    </table>
+                <table class="table">
+                    <tbody>
+                    @foreach (var moneySpentItem in Model.MoneySpentItems)
+                    {
+                        if (@moneySpentItem.ItemCost > 0)
+                        {
+                            <tr class="danger">
+                                <td>@moneySpentItem.Datetime</td>
+                                <td>@moneySpentItem.ItemName</td>
+                                <td>@Math.Abs(moneySpentItem.ItemCost) DR</td>
+                                @*<td>@moneySpentItem.BalanceAfter </td>*@
+                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr class="success">
+                                <td>@moneySpentItem.Datetime</td>
+                                <td>@moneySpentItem.ItemName</td>
+                                <td>@Math.Abs(moneySpentItem.ItemCost) CR</td>
+                                @*<td>@moneySpentItem.BalanceAfter</td>*@
+                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
 
-    <div class="row">
-        <div class="container" >
-            <div class="col-xs-3" style="background-color: lightgray">
-                <h4>Expense</h4>
-                <div class="form-group">
-                    <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid", asp-route-itemName=itemName, asp-route-itemCost=itemCost>
-                        <label>Item</label>
-                        <input class="form-control" type="text" placeholder="Food Shop" name="itemName"/>
-                        <label>Cost</label>
-                        <input class="form-control" type="text" placeholder="10.50" name="itemCost"/>
-                        <button class="btn">AddItem</button>
-                    </form>
-                </div>
-            </div>
+                <div class="row">
+                    <div class="container">
+                        <div class="col-xs-3 insertMoneyItem">
+                            <h4>Expense</h4>
+                            <div class="form-group">
+                                <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+                                    <input class="input" type="text" placeholder="Food Shop" name="itemName" /><br /><br />
+                                    <input class="input" type="text" placeholder="10.50" name="itemCost" />
+                                    <button class="btn">Update</button>
+                                </form>
+                            </div>
+                        </div>
 
-            <div class="col-xs-offset-1 col-xs-3" style="background-color: lightgray">
-                <h4>Deposit</h4>
+                        <div class="col-xs-offset-1 col-xs-3 insertMoneyItem">
+                            <h4>Deposit</h4>
 
-                <div class="form-group">
-                    <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid", asp-route-itemName=itemName, asp-route-itemCost=itemCost>
-                        <label>Name</label>
-                        <input class="form-control" type="text" placeholder="Food Shop" name="itemName" />
-                        <label>Amount</label>
-                        <input id ="amount" class="form-control" type="text" placeholder="10.50" name="itemCost" />
-                        <button class="btn" onclick="depositAmount()">AddItem</button>
-                    </form>
+                            <div class="form-group">
+                                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+                                    <input class="input" type="text" placeholder="Birthday Money" name="itemName" /><br /><br />
+                                    <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" />
+                                    <button class="btn" onclick="depositAmount()">Update</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
-        </div>
+        </div><br />
+
     </div>
+
 </div>
 
 <script>
@@ -87,7 +83,7 @@
         if (document.getElementById("amount").value === 0) {
             document.getElementById("amount").placeholder = "invalid amount";
             event.preventDefault();
-            
+
             return false;
         }
         document.getElementById("amount").value *= -1;
@@ -95,19 +91,18 @@
 </script>
 
 @*$(document).ready(function(){
-var i=1;
-$("#add_row").click(function(){
-$('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='name"+i+"' type='text' placeholder='Name' class='form-control input-md'  /> </td><td><input  name='mail"+i+"' type='text' placeholder='Mail'  class='form-control input-md'></td><td><input  name='mobile"+i+"' type='text' placeholder='Mobile'  class='form-control input-md'></td>");
+    var i=1;
+    $("#add_row").click(function(){
+    $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='name"+i+"' type='text' placeholder='Name' class='form-control input-md'  /> </td><td><input  name='mail"+i+"' type='text' placeholder='Mail'  class='form-control input-md'></td><td><input  name='mobile"+i+"' type='text' placeholder='Mobile'  class='form-control input-md'></td>");
 
-$('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
-i++; 
-});
-$("#delete_row").click(function(){
-if(i>1){
-$("#addr"+(i-1)).html('');
-i--;
-}
-});
+    $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+    i++;
+    });
+    $("#delete_row").click(function(){
+    if(i>1){
+    $("#addr"+(i-1)).html('');
+    i--;
+    }
+    });
 
-});*@
-	
+    });*@

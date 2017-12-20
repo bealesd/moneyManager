@@ -9,5 +9,6 @@ namespace MoneyApp.Interfaces
     {
         Guid UserGuid { get; set; }
         string Username { get; set; }
+        List<Guid> AccountGuid { get; set; }
     }
 }

@@ -22,13 +22,35 @@ namespace MoneyApp.Repos
 
         public IUser GetUser(Guid userGuid)
         {
-            return userGuid == Guid.Empty ? throw new Exception() : _userRepo.GetUser(userGuid);
+            if (userGuid == Guid.Empty)
+            {
+                throw new Exception();
+            }
+            HarmonizeUserMoneyAccounts(userGuid);
+            return _userRepo.GetUser(userGuid);
+            //return userGuid == Guid.Empty ? throw new Exception() : _userRepo.GetUser(userGuid);
         }
 
         public IUser UserLogin(string username)
         {// add a password, which is checked against a hashed table, if password/username correct return account Guids, which are hashed using the password.
             var userGuid = _userLoginRepo.GetUserGuid(username);
             return GetUser(userGuid);
+        }
+
+        private void HarmonizeUserMoneyAccounts(Guid userGuid)
+        {
+            var user = _userRepo.GetUser(userGuid);
+            foreach (var accountGuid in user.AccountGuid)
+            {
+                try
+                {
+                    _accountRepo.GetMoneyAccount(accountGuid);
+                }
+                catch (Exception)
+                {
+                    this.RemoveMoneyAccountFromUser(userGuid, accountGuid);
+                }
+            }
         }
 
         public IEnumerable<IUser> GetAllUsers()
@@ -69,7 +91,7 @@ namespace MoneyApp.Repos
             _userRepo.AddAccountToUser(userGuid, CreateMoneyAccount(accountName));
         }
 
-        public void DeleteMoneyAccount(Guid accountGuid)
+        private void DeleteMoneyAccount(Guid accountGuid)
         {
             _accountRepo.DeleteMoneyAccount(accountGuid);
         }
@@ -77,6 +99,14 @@ namespace MoneyApp.Repos
         public void RemoveMoneyAccountFromUser(Guid userGuid, Guid accountGuid)
         {
             _userRepo.RemoveAccountFromUser(userGuid, accountGuid);
+            if (!this.IsLinkedAccount(accountGuid))
+                this.DeleteMoneyAccount(accountGuid);
+        }
+
+        private bool IsLinkedAccount(Guid accountGuid)
+        {
+            var users = this.GetAllUsers();
+            return users.Count(u => Equals(u.AccountGuid, accountGuid)) > 1;
         }
 
         public void CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)

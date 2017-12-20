@@ -22,7 +22,7 @@ namespace MoneyApp.Controllers
             _client = new HttpClient();
             _userApiService = userApiService;
         }
-        public IActionResult Login()
+        public IActionResult LoginPage()
         {
             return View("LoginView");
         }
@@ -32,7 +32,7 @@ namespace MoneyApp.Controllers
             try
             {
                 _userApiService.CreateUser(username);
-                return RedirectToAction(nameof(LoadUserAccountsView), new { username });
+                return RedirectToAction(nameof(UserAccountsPage), new { username });
             }
             catch (Exception)
             {
@@ -40,11 +40,30 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult LoadUserAccountsView(string username)//string password
+        public IActionResult RegisterUserPage()//string password
+        {
+            return View("RegisterUserView");
+        }
+
+        public IActionResult DeleteUser(string username)
         {
             try
             {
-                return View("AccountsOverview", _userApiService.GetUserDto(username));
+                _userApiService.DeleteUser(username);
+                return RedirectToAction(nameof(LoginPage));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(LoginPage));
+            }
+        }
+
+        public IActionResult UserAccountsPage(string username)//string password
+        {
+            try
+            {
+                var userDto = _userApiService.GetUserDto(username);
+                return View("AccountsOverview", userDto);
             }
             catch (Exception)
             {
@@ -52,10 +71,47 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult LoadAccountView(Guid accountGuid)
+        public IActionResult AccountPage(Guid accountGuid, UserDto userDto)
         {
-            var account = _userApiService.LoadAnAccount(accountGuid);
-            return View("AccountView", account);
+            try
+            {
+                var account = _userApiService.LoadMoneyAccount(accountGuid);
+                return View("AccountView", account);
+            }
+            catch (Exception)
+            {
+                return View("AccountsOverview", userDto);
+            }
+        }
+
+        public IActionResult DeleteMoneyAccountFromUser(Guid accountGuid, string username)
+        {
+            try
+            {
+                var userDto = _userApiService.GetUserDto(username);
+                _userApiService.DeleteMoneyAccountFromUser(userDto.UserGuid, accountGuid);
+                return View("AccountsOverview", userDto);
+            }
+            catch (Exception)
+            {
+                var userDto = _userApiService.GetUserDto(username);
+                return View("AccountsOverview", userDto);
+            }
+        }
+
+        public IActionResult CreateMoneyAccountForUser(string username, string accountName)
+        {
+            try
+            {
+                var userDto = _userApiService.GetUserDto(username);
+                _userApiService.CreateMoneyAccountForUser(userDto.UserGuid, accountName);
+                return View("AccountsOverview", userDto);
+            }
+            catch (Exception)
+            {
+                var userDto = _userApiService.GetUserDto(username);
+                return View("AccountsOverview", userDto);
+            }
         }
 
         public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName)
@@ -64,13 +120,12 @@ namespace MoneyApp.Controllers
             {
                 var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = DateTime.Now };
                 _userApiService.CreateMoneySpentItem(accountGuid, moneySpentItem);
-                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+                return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
             catch (Exception)
             {
-                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+                return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
-
         }
 
         public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
@@ -78,13 +133,12 @@ namespace MoneyApp.Controllers
             try
             {
                 _userApiService.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
-                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+                return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
             catch (Exception)
             {
-                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+                return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
-
         }
     }
 }

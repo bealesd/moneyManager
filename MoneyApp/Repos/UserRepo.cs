@@ -81,6 +81,7 @@ namespace MoneyApp.Repos
         public void RemoveAccountFromUser(Guid userGuid, Guid accountGuid)
         {
             this.GetUser(userGuid).AccountGuid.Remove(accountGuid);//ArguementNullException
+            Save();
         }
     }
 }

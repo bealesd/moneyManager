@@ -10,7 +10,7 @@ namespace MoneyApp.Helper
         {
             moneySpentItems.ForEach(m =>
             {
-                if (Single.IsNaN(m.ItemCost))
+                if (Single.IsNaN(m.ItemCost) || m.ItemCost == 0)
                 {
                     moneySpentItems.Remove(m);
                 }

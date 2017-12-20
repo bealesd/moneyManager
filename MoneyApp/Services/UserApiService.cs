@@ -35,8 +35,16 @@ namespace MoneyApp.Services
         {
             var user = GetUser(username);
             var userDto = new UserDto() { Username = user.Username, UserGuid = user.UserGuid, Accounts = new List<Account>() };
-            user.AccountGuid.ForEach(guid => userDto.Accounts.Add(LoadAnAccount(guid)));
+            user.AccountGuid.ForEach(guid => userDto.Accounts.Add(LoadMoneyAccount(guid)));
             return userDto;
+        }
+
+        public void DeleteUser(string username)
+        {
+            var userGuid = this.GetUser(username).UserGuid;
+            var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}").Result;
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception();
         }
 
         private User GetUser(string username)
@@ -48,12 +56,26 @@ namespace MoneyApp.Services
             return httpResponse.Content.ReadAsAsync<User>().Result;
         }
 
-        public Account LoadAnAccount(Guid accountGuid)
+        public Account LoadMoneyAccount(Guid accountGuid)
         {
             var httpResponse = _client.GetAsync($"{_apiPath}/user/account/{accountGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
             return httpResponse.Content.ReadAsAsync<Account>().Result;
+        }
+
+        public void DeleteMoneyAccountFromUser(Guid userGuid, Guid accountGuid)
+        {
+            var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}/{accountGuid}").Result;
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception();
+        }
+
+        public void CreateMoneyAccountForUser(Guid userGuid, string accountName)
+        {
+            var httpResponse = _client.PostAsync($"{_apiPath}/user/{userGuid}/{accountName}", null).Result;
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception();
         }
 
         public void CreateMoneySpentItem(Guid accountGuid, MoneySpentItemDto moneySpentItem)

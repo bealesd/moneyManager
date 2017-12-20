@@ -1,46 +1,99 @@
-﻿@model MoneyApp.Dto.UserDto
+﻿@using MoneyApp.Dto
+@model MoneyApp.Dto.UserDto
 
 @{
     ViewBag.Title = "Accounts Overview";
+    UserDto user = @Model;
 }
 
 
-
 <div class="row">
-    <div class="col-xs-12">
-        <h3 class="text-center">Welcome: @Model.Username</h3>
-        <br/>
-    </div>
-    
-    <table class="table">
-        <thread>
-            <tr>
-                <th>Account</th>
-                <th>Balance</th>
-            </tr>
-        </thread>
-        
-   @foreach (var account in Model.Accounts)
-    {
-        <tr>
-            <th>@account.AccountName</th>
+    <div class="col-xs-offset-3 col-xs-6 loginBox">
+        <div class="row">
+            <div class="col-offset-1 col-xs-10">
+                <h3 class="text-center">Welcome: @Model.Username</h3>
+                <br />
+            </div>
+        </div>
 
-            @if (account.AccountBalance < 0)
-            {
-                <th>@Math.Abs(account.AccountBalance) dr</th>
-            }
-            @if (account.AccountBalance >= 0)
-            {
-                <th>@Math.Abs(account.AccountBalance) cr</th>
-            }
-            
-            <th class="col-xs-2">
-                <form asp-action="LoadAccountView", asp-route-accountGuid =@account.AccountGuid>
-                    <button class="btn">Details</button>
+        <div class="row">
+            <div class="col-offset-1 col-xs-10">
+
+                <table class="table">
+                    @*<thread>
+                            <tr>
+                                <th>Account</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thread>*@
+
+                    @foreach (var account in Model.Accounts)
+                    {
+                        <tr>
+                            <th>@account.AccountName</th>
+
+                            @if (account.AccountBalance < 0)
+                            {
+                                <th>@Math.Abs(account.AccountBalance) dr</th>
+                            }
+                            @if (account.AccountBalance >= 0)
+                            {
+                                <th>@Math.Abs(account.AccountBalance) cr</th>
+                            }
+
+                            <th class="col-xs-2">
+                                <form asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username">
+                                    <button class="btn btn-info">Details</button>
+                                </form>
+                            </th>
+                            <th>
+                                <form asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+                            </th>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-offset-1 col-xs-10">
+                <form asp-action="CreateMoneyAccountForUser" asp-route-username="@Model.Username">
+                    <div class="row">
+                        <br />
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <input class="input" type="text" placeholder=" account name" name="accountName" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                        <div class="col-xs-offset-8 col-xs-3">
+                            <button class="btn btn-success">Create Account</button>
+                        </div>
+                    </div>
+
                 </form>
-            </th>
-        </tr>
-    }
-    </table>
+            </div>
+        </div>
+        <br />
 
+
+
+
+        <div class="row">
+            <div class="col-xs-offset-6 col-xs-6">
+                <form asp-action="DeleteUser" asp-route-username="@Model.Username">
+                    <a>Delete User Account</a>
+                </form>
+            </div>
+        </div>
+        <br />
+
+    </div>
 </div>
+
+
+
+    
+

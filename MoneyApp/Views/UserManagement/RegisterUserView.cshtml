@@ -1,8 +1,6 @@
 ﻿@{
-    ViewBag.Title = "Money Manager";
+    ViewBag.Title = "Create a User Account";
 }
-
-
 
 <div class="row">
     <div class="col-xs-offset-3 col-xs-6 loginBox">
@@ -13,34 +11,40 @@
                     Money App
                 </h4>
                 <h3>
-                    Sign In
+                    Create Account
                 </h3>
             </div>
         </div>
 
         <div class="form-group">
-            <form asp-action="UserAccountsPage">
+            <form asp-action="RegisterUser">
                 <div class="row">
-                    <br />
                     <div class="col-xs-10 col-xs-offset-1">
+                        <br />
                         <input class="input" type="text" name="username" placeholder="Username" />
                     </div>
                 </div>
                 <div class="row">
                     <br /><br />
                     <div class="col-xs-offset-8 col-xs-3">
-                        <button class="btn btn-primary">Submit</button>
+                        <button class="btn btn-primary">Register</button>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div class="row">
-            <div class="col-xs-offset-1">
-                <a asp-action="RegisterUserPage">More Options</a>
-            </div>
-        </div>
-        <br />
-
     </div>
 </div>
+
+
+@*<div class="row">
+        <div class="col-xs-3">
+            <div class="form-group">
+                <form asp-action="RegisterUser">
+                    <input class="form-control" type="text" name="username" placeholder="Register" />
+                    <br />
+                    <button class="btn">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>*@

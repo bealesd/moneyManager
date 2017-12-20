@@ -12,14 +12,48 @@
     </title>
 </head>
 
-<body>
-    <div class="container">
-        <div class="jumbotron">
-            @RenderBody()
-        </div>
+<body style="background-color: rgb(249, 249, 249)">
 
-    </div>
-    
+    <style>
+        .input {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            border-bottom: 1px solid lightgray;
+            width: 100%;
+        }
+
+        .loginBox {
+            background-color: white;
+            border-radius: 10px;
+            border-color: lightgray;
+            border-style: solid;
+            border-width: 1px;
+        }
+        .insertMoneyItem {
+            border-color: lightgray;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+
+
+    <br />
+ 
+        @RenderBody()
+
+
+
+
+
+
+
+    @*<div class="container">
+            <div class="jumbotron">
+                @RenderBody()
+            </div>
+        </div>*@
+
 </body>
 
 </html>

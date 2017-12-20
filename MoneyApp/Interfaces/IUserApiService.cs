@@ -11,7 +11,10 @@ namespace MoneyApp.Interfaces
     {
         IUser CreateUser(string username);
         UserDto GetUserDto(string username);
-        Account LoadAnAccount(Guid accountGuid);
+        void DeleteUser(string username);
+        void CreateMoneyAccountForUser(Guid userGuid, string accountName);
+        Account LoadMoneyAccount(Guid accountGuid);
+        void DeleteMoneyAccountFromUser(Guid userGuid, Guid accountGuid);
         void CreateMoneySpentItem(Guid accouGuid, MoneySpentItemDto moneySpentItem);
         void DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
     }
