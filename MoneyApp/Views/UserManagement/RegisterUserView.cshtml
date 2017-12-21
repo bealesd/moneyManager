@@ -10,7 +10,7 @@
                 Money App
             </h4>
             <h3>
-                Create Account
+                Create User
             </h3>
         </div>
     </div>
@@ -24,7 +24,7 @@
                 </div>
                 <br /><br />
                 <div class="pull-right">
-                    <button class="btn btn-primary">Register</button>
+                    <button onclick="ValidUsername(this)" class="btn btn-primary">Register</button>
                 </div>
             </form>
         </div>
@@ -33,15 +33,14 @@
 
 </div>
 
-
-@*<div class="row">
-        <div class="col-xs-3">
-            <div class="form-group">
-                <form asp-action="RegisterUser">
-                    <input class="form-control" type="text" name="username" placeholder="Register" />
-                    <br />
-                    <button class="btn">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>*@
+<script>
+    function ValidUsername(userObj) {
+        var validUserRegex = /^[A-Z]{1}[a-zA-Z]{6,20}$/;
+        var inputObject = userObj.parentElement.parentElement.getElementsByTagName("input")[0];
+        if (inputObject.value.match(validUserRegex)) {
+            return;
+        }
+        event.preventDefault();
+        inputObject.placeholder = "Invalid Name";
+    }
+</script>
