@@ -6,94 +6,71 @@
     UserDto user = @Model;
 }
 
+<div class="loginBox">
 
-<div class="row">
-    <div class="col-xs-offset-3 col-xs-6 loginBox">
-        <div class="row">
-            <div class="col-offset-1 col-xs-10">
-                <h3 class="text-center">Welcome: @Model.Username</h3>
-                <br />
-            </div>
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10">
+            <h3 class="text-center">@Model.Username</h3>
+            <br />
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-offset-1 col-xs-10">
-
-                <table class="table">
-                    @*<thread>
-                            <tr>
-                                <th>Account</th>
-                                <th>Balance</th>
-                            </tr>
-                        </thread>*@
-
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10 ">
+            <table class="table table-hover table-borderless">
+                <tbody>
                     @foreach (var account in Model.Accounts)
                     {
                         <tr>
-                            <th>@account.AccountName</th>
+                            <td>@account.AccountName</td>
 
                             @if (account.AccountBalance < 0)
                             {
-                                <th>@Math.Abs(account.AccountBalance) dr</th>
+                                <td class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
                             }
                             @if (account.AccountBalance >= 0)
                             {
-                                <th>@Math.Abs(account.AccountBalance) cr</th>
+                                <td class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
                             }
-
-                            <th class="col-xs-2">
-                                <form asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username">
-                                    <button class="btn btn-info">Details</button>
-                                </form>
-                            </th>
-                            <th>
-                                <form asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username">
-                                    <button class="btn btn-danger">Delete</button>
-                                </form>
-                            </th>
+                            <td class="col-xs-2">
+                                <a asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username" class="glyphicon glyphicon-pencil"></a>
+                            </td>
+                            <td>
+                                <a asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username" class="glyphicon glyphicon-remove"></a>
+                            </td>
                         </tr>
                     }
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
-
-        <div class="row">
-            <div class="col-offset-1 col-xs-10">
-                <form asp-action="CreateMoneyAccountForUser" asp-route-username="@Model.Username">
-                    <div class="row">
-                        <br />
-                        <div class="col-xs-10 col-xs-offset-1">
-                            <input class="input" type="text" placeholder=" account name" name="accountName" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <br />
-                        <div class="col-xs-offset-8 col-xs-3">
-                            <button class="btn btn-success">Create Account</button>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-        <br />
-
-
-
-
-        <div class="row">
-            <div class="col-xs-offset-6 col-xs-6">
-                <form asp-action="DeleteUser" asp-route-username="@Model.Username">
-                    <a>Delete User Account</a>
-                </form>
-            </div>
-        </div>
-        <br />
-
     </div>
+
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10">
+            <form asp-action="CreateMoneyAccountForUser" asp-route-username="@Model.Username">
+
+                <br />
+                <div class="col-xs-13">
+                    <input class="input" type="text" placeholder=" account name" name="accountName" />
+                </div>
+
+                <br />
+                <div class="pull-right">
+                    <button class="btn btn-success">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-10" style="text-align: right">
+            @*col-xs-offset-6 col-xs-4*@
+            <form asp-action="DeleteUser" asp-route-username="@Model.Username">
+                <a>Delete User Account</a>
+            </form>
+        </div>
+    </div>
+    <br />
+
 </div>
-
-
-
-    
-

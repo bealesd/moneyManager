@@ -1,80 +1,75 @@
 ﻿@model MoneyApp.Models.Account
 
-<div class="row">
-    <div class="col-xs-offset-3 col-xs-6 loginBox">
-        <div class="row">
-            <div class="col-xs-10 col-xs-offset-1">
-                <h2>@Model.AccountName</h2>
-                @if (Model.AccountBalance < 0)
-                {
-                    <h3>Balance: @Math.Abs(Model.AccountBalance) dr</h3>
-                }
-                @if (Model.AccountBalance >= 0)
-                {
-                    <h3>Balance: @Math.Abs(Model.AccountBalance) cr</h3>
-                }
+<div class="loginBox">
 
-                <table class="table">
-                    <tbody>
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            <h2>@Model.AccountName</h2>
+            @if (Model.AccountBalance < 0)
+            {
+                <h3>Balance: @Math.Abs(Model.AccountBalance) dr</h3>
+            }
+            @if (Model.AccountBalance >= 0)
+            {
+                <h3>@Math.Abs(Model.AccountBalance) cr</h3>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            <table class="table table-borderless table-hover">
+                <tbody>
                     @foreach (var moneySpentItem in Model.MoneySpentItems)
                     {
                         if (@moneySpentItem.ItemCost > 0)
                         {
-                            <tr class="danger">
+                            <tr class=>
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
-                                <td>@Math.Abs(moneySpentItem.ItemCost) DR</td>
-                                @*<td>@moneySpentItem.BalanceAfter </td>*@
-                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
+                                <td class="tdRed">@Math.Abs(moneySpentItem.ItemCost) DR</td>
+                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Remove</a></td>
                             </tr>
                         }
                         else
                         {
-                            <tr class="success">
+                            <tr class="">
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
-                                <td>@Math.Abs(moneySpentItem.ItemCost) CR</td>
-                                @*<td>@moneySpentItem.BalanceAfter</td>*@
-                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Delete</a></td>
+                                <td class="tdGreen">@Math.Abs(moneySpentItem.ItemCost) CR</td>
+                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Remove</a></td>
                             </tr>
                         }
                     }
-                    </tbody>
-                </table>
-
-                <div class="row">
-                    <div class="container">
-                        <div class="col-xs-3 insertMoneyItem">
-                            <h4>Expense</h4>
-                            <div class="form-group">
-                                <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
-                                    <input class="input" type="text" placeholder="Food Shop" name="itemName" /><br /><br />
-                                    <input class="input" type="text" placeholder="10.50" name="itemCost" />
-                                    <button class="btn">Update</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-offset-1 col-xs-3 insertMoneyItem">
-                            <h4>Deposit</h4>
-
-                            <div class="form-group">
-                                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
-                                    <input class="input" type="text" placeholder="Birthday Money" name="itemName" /><br /><br />
-                                    <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" />
-                                    <button class="btn" onclick="depositAmount()">Update</button>
-                                </form>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div><br />
-
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <div class="row">
+        <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
+            <h4>Expense</h4>
+            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+                <input class="input" type="text" placeholder="Food Shop" name="itemName" /><br /><br />
+                <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
+                <button class="btn btn-danger">Add</button>
+            </form>
+        </div>
+
+        <div class="col-xs-offset-2 col-xs-4 col-sm-4 col-md-4 col-lg-4 insertMoneyItem">
+            <div class="pull-right">
+                <h4>Deposit</h4>
+
+                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+                    <input class="input" type="text" placeholder="Birthday Money" name="itemName" /><br /><br />
+                    <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" /><br /><br />
+                    <button class="btn btn-success" onclick="depositAmount()">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br />
 </div>
 
 <script>
