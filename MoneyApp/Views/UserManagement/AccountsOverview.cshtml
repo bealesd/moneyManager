@@ -17,26 +17,27 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10 ">
-            <table class="table table-hover table-borderless">
+            <table class="table table-hover table-borderless table">
                 <tbody>
                     @foreach (var account in Model.Accounts)
                     {
                         <tr>
-                            <td>@account.AccountName</td>
+                            <td onclick="LoadAccountPage(this)">@account.AccountName</td>
 
                             @if (account.AccountBalance < 0)
                             {
-                                <td class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
+                                <td onclick="LoadAccountPage(this)" class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
                             }
                             @if (account.AccountBalance >= 0)
                             {
-                                <td class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
+                                <td onclick="LoadAccountPage(this)" class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
                             }
-                            <td class="col-xs-2">
-                                <a asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username" class="glyphicon glyphicon-pencil"></a>
+                            <td onclick="LoadAccountPage(this)" class="col-xs-2">
+                                <a id="go" asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username"></a>
                             </td>
                             <td>
-                                <a asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username" class="glyphicon glyphicon-remove"></a>
+                                <a onclick="ConfirmDelete('Delete Money Account?')" class="glyphicon glyphicon-remove"
+                                   asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username"></a>
                             </td>
                         </tr>
                     }
@@ -65,12 +66,23 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10" style="text-align: right">
-            @*col-xs-offset-6 col-xs-4*@
-            <form asp-action="DeleteUser" asp-route-username="@Model.Username">
-                <a>Delete User Account</a>
-            </form>
+            <a onclick="ConfirmDelete('Delete Your Account?')"  asp-action="DeleteUser" asp-route-username="@Model.Username">Delete User Account</a>
         </div>
     </div>
     <br />
 
 </div>
+
+<script>
+    function LoadAccountPage(row) {
+        row.parentElement.getElementsByTagName("a")[0].click();
+    }
+
+    function ConfirmDelete(message) {
+        if (confirm(message)) {
+            return;
+        }
+        event.preventDefault();
+    }
+
+</script>

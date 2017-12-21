@@ -24,20 +24,20 @@
                     {
                         if (@moneySpentItem.ItemCost > 0)
                         {
-                            <tr class=>
+                            <tr class>
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
                                 <td class="tdRed">@Math.Abs(moneySpentItem.ItemCost) DR</td>
-                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Remove</a></td>
+                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid"></a></td>
                             </tr>
                         }
                         else
                         {
-                            <tr class="">
+                            <tr class>
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
                                 <td class="tdGreen">@Math.Abs(moneySpentItem.ItemCost) CR</td>
-                                <td><a asp-action="DeleteMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid">Remove</a></td>
+                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid"></a></td>
                             </tr>
                         }
                     }
@@ -49,18 +49,17 @@
     <div class="row">
         <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
             <h4>Expense</h4>
-            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
                 <input class="input" type="text" placeholder="Food Shop" name="itemName" /><br /><br />
                 <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
                 <button class="btn btn-danger">Add</button>
             </form>
         </div>
 
-        <div class="col-xs-offset-2 col-xs-4 col-sm-4 col-md-4 col-lg-4 insertMoneyItem">
+        <div class="col-xs-offset-2 col-xs-4 insertMoneyItem">
             <div class="pull-right">
                 <h4>Deposit</h4>
-
-                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" , asp-route-itemName=itemName, asp-route-itemCost=itemCost>
+                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
                     <input class="input" type="text" placeholder="Birthday Money" name="itemName" /><br /><br />
                     <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" /><br /><br />
                     <button class="btn btn-success" onclick="depositAmount()">Add</button>
@@ -82,6 +81,13 @@
             return false;
         }
         document.getElementById("amount").value *= -1;
+    }
+
+    function ConfirmDelete(message) {
+        if (confirm(message)) {
+            return;
+        }
+        event.preventDefault();
     }
 </script>
 
