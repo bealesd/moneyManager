@@ -1,9 +1,11 @@
-﻿@using MoneyApp.Dto
+﻿@using MoneyApp.Dto;
+@using System.Linq;
 @model MoneyApp.Dto.UserDto
 
 @{
     ViewBag.Title = "Accounts Overview";
     UserDto user = @Model;
+    var a = user.Accounts.Take(10).ToList();
 }
 
 <div class="loginBox">
@@ -16,11 +18,27 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="height: 500px !important; overflow: auto;">
         <div class="col-xs-offset-1 col-xs-10 ">
-            <table class="table table-hover table-borderless table">
+            <table class="table table-hover table-borderless">
                 <tbody>
-                    @foreach (var account in Model.Accounts)
+                @{int count = 0;}
+                    
+                @* Make a dynamic list based on a date range, possibly load 10 items *@
+                <tr>
+                    <td>
+                        <a onclick="function(){ alert('a'); }">Load First Ten Rows</a>
+                    </td>
+                </tr>
+
+                @foreach (var account in Model.Accounts)
+                {
+                    count++;
+                    if (count > 10)
+                    {
+                        <tr><td><a onclick="@count=0">click</a></td></tr>
+                    }
+                    else
                     {
                         <tr>
                             <td onclick="LoadAccountPage(this)">@account.AccountName</td>
@@ -42,6 +60,26 @@
                             </td>
                         </tr>
                     }
+                    @*<tr>
+                        <td onclick="LoadAccountPage(this)">@account.AccountName</td>
+
+                        @if (account.AccountBalance < 0)
+                        {
+                            <td onclick="LoadAccountPage(this)" class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
+                        }
+                        @if (account.AccountBalance >= 0)
+                        {
+                            <td onclick="LoadAccountPage(this)" class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
+                        }
+                        <td onclick="LoadAccountPage(this)" class="col-xs-2">
+                            <a id="go" asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userDto="@Model.Username"></a>
+                        </td>
+                        <td>
+                            <a onclick="ConfirmDelete('Delete Money Account?')" class="glyphicon glyphicon-remove"
+                               asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-username="@Model.Username"></a>
+                        </td>
+                    </tr>*@
+                }
                 </tbody>
             </table>
         </div>
