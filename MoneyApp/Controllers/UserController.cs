@@ -109,9 +109,14 @@ namespace MoneyApp.Controllers
             }
         }
 
+
         [HttpPost("account/{accountGuid}")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
         public IActionResult AddMoneySpentItem(Guid accountGuid, [FromBody] MoneySpentItemDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Could Not Create Money Item");
+            }
             try
             {
                 _adapterRepo.CreateMoneySpentItem(accountGuid, model.ItemName, model.ItemCost, model.DateTime);

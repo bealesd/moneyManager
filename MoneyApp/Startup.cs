@@ -24,7 +24,7 @@ namespace MoneyApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-                //.AddSessionStateTempDataProvider();
+            //.AddSessionStateTempDataProvider();
 
             //services.AddSession();
 
@@ -32,7 +32,7 @@ namespace MoneyApp
 
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
-                                                        new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")), 
+                                                        new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
                                                         new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt")),
                                                         new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt"))
                                                     ));
@@ -48,14 +48,15 @@ namespace MoneyApp
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseStaticFiles();
+            app.UseStaticFiles();
             //app.UseSession();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=UserManagementController}/{action=LoginPage}");
+                    template: "{controller}/{action}",
+                    defaults: new { controller = "UserManagement", action = "LoginPage" });
             });
 
             app.UseSwagger();

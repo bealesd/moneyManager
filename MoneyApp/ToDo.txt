@@ -19,3 +19,5 @@ Put dtos in the repo/service layer.
 bug - when user money account deleted, user still hold money account guid.
 1. when money account deleted, delete users account guid.
 2. check money account in the user exists automaticallly.
+
+1. Add validation to server side

@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace MoneyApp.Interfaces
 {
     public interface IAccount
     {
+        [Required]
+        [MinLength(7)]
+        [MaxLength(20)]
+        [DataType(DataType.Text)]
         string AccountName { get; set; }
+        
+        float AccountBalance { get; set; }
         Guid AccountGuid { get; set; }
     }
 }

@@ -10,7 +10,8 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
-            <h3 class="text-center">Welcome: @Model.Username</h3>
+                <h6 class="pull-left">Your Money Accounts</h6><br/>
+                <h3 class="text-center">@Model.Username</h3>
             <br />
         </div>
     </div>
@@ -51,13 +52,13 @@
             <form asp-action="CreateMoneyAccountForUser" asp-route-username="@Model.Username">
 
                 <br />
-                <div class="col-xs-13">
-                    <input class="input" type="text" placeholder=" account name" name="accountName" />
+                <div class="col-xs-offset-6 col-xs-13">
+                    <input class="input" type="text" placeholder="account name" name="accountName" />
                 </div>
 
                 <br />
                 <div class="pull-right">
-                    <button class="btn btn-success">Create Account</button>
+                    <button onclick="ValidAccountName(this)" class="btn btn-success">Create Account</button>
                 </div>
             </form>
         </div>
@@ -66,7 +67,7 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10" style="text-align: right">
-            <a onclick="ConfirmDelete('Delete Your Account?')"  asp-action="DeleteUser" asp-route-username="@Model.Username">Delete User Account</a>
+            <a onclick="ConfirmDelete('Delete Your Account?')" asp-action="DeleteUser" asp-route-username="@Model.Username">Delete User Account</a>
         </div>
     </div>
     <br />
@@ -82,6 +83,17 @@
         if (confirm(message)) {
             return;
         }
+        event.preventDefault();
+    }
+
+    function ValidAccountName(self) {
+        var input = self.parentElement.parentElement.getElementsByTagName("input")[0];
+        var regex = /^[A-Z]{1}[A-Za-z]{6,20}$/;
+        if (input.value.match(regex)) {
+            return;
+        }
+        input.value = null;
+        input.placeholder = "Invalid account name";
         event.preventDefault();
     }
 

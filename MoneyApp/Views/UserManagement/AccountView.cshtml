@@ -50,9 +50,9 @@
         <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
             <h4>Expense</h4>
             <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
-                <input class="input" type="text" placeholder="Food Shop" name="itemName" /><br /><br />
+                <input class="input" type="text" placeholder="FoodShop" name="itemName" /><br /><br />
                 <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
-                <button class="btn btn-danger">Add</button>
+                <button onclick="ValidMoneyItem(this)" class="btn btn-danger">Add</button>
             </form>
         </div>
 
@@ -60,9 +60,9 @@
             <div class="pull-right">
                 <h4>Deposit</h4>
                 <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
-                    <input class="input" type="text" placeholder="Birthday Money" name="itemName" /><br /><br />
+                    <input class="input" type="text" placeholder="BirthdayMoney" name="itemName" /><br /><br />
                     <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" /><br /><br />
-                    <button class="btn btn-success" onclick="depositAmount()">Add</button>
+                    <button class="btn btn-success" onclick="depositAmount(this)">Add</button>
                 </form>
             </div>
         </div>
@@ -72,7 +72,8 @@
 </div>
 
 <script>
-    function depositAmount() {
+    function depositAmount(self) {
+        ValidMoneyItem(self);
         var amountObj = document.getElementById("amount");
         if (document.getElementById("amount").value === 0) {
             document.getElementById("amount").placeholder = "invalid amount";
@@ -89,6 +90,28 @@
         }
         event.preventDefault();
     }
+
+    function ValidMoneyItem(self) {
+        var inputName = self.parentElement.getElementsByTagName("input")[0];
+        var inputAmount = self.parentElement.getElementsByTagName("input")[1];
+        var regexName = /^[A-Z]{1}[A-Za-z]{3,20}$/;
+        var regexAmount = /^[0-9]{1,4}(\.[0-9]{1,2})?$/;
+        var IsValidName = regexName.test(inputName.value);
+        var IsValidAmount = regexAmount.test(inputAmount.value);
+        if (IsValidName && IsValidAmount) {
+            return;
+        }
+        if (IsValidName === false) {
+            inputName.value = null;
+            inputName.placeholder = "Invalid money item";
+        }
+        if (IsValidAmount === false) {
+            inputAmount.value = null;
+            inputAmount.placeholder = "Invalid money amount";
+        }
+        event.preventDefault();
+    }
+
 </script>
 
 @*$(document).ready(function(){

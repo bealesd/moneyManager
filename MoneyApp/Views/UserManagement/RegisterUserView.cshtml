@@ -20,7 +20,7 @@
             <form asp-action="RegisterUser">
                 <div>
                     <br />
-                    <input class="input" type="text" name="username" placeholder="Username" />
+                    <input id="myText" class="input" type="text" name="username" placeholder="Username" />
                 </div>
                 <br /><br />
                 <div class="pull-right">
@@ -41,6 +41,7 @@
             return;
         }
         event.preventDefault();
-        inputObject.placeholder = "Invalid Name";
+        inputObject.value = null;
+        inputObject.placeholder = "Invalid Username";
     }
 </script>
