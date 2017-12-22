@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
-using MoneyApp.Models;
 
 namespace MoneyApp.Controllers
 {
@@ -114,11 +110,11 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName)
+        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
         {
             try
             {
-                var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = DateTime.Now };
+                var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = dateTime };
                 _userApiService.CreateMoneySpentItem(accountGuid, moneySpentItem);
                 return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }

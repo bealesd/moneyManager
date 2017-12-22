@@ -49,20 +49,22 @@
     <div class="row">
         <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
             <h4>Expense</h4>
-            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
+            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime>
                 <input class="input" type="text" placeholder="FoodShop" name="itemName" /><br /><br />
                 <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
-                <button onclick="ValidMoneyItem(this)" class="btn btn-danger">Add</button>
+                <input class="input" type="datetime-local" name="dateTime">
+                <button class="btn btn-danger pull-right" onclick="ValidMoneyItem(this)">Add</button>
             </form>
         </div>
 
         <div class="col-xs-offset-2 col-xs-4 insertMoneyItem">
             <div class="pull-right">
                 <h4>Deposit</h4>
-                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost>
+                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@Model.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime>
                     <input class="input" type="text" placeholder="BirthdayMoney" name="itemName" /><br /><br />
                     <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" /><br /><br />
-                    <button class="btn btn-success" onclick="depositAmount(this)">Add</button>
+                    <input class="input" type="datetime-local" name="dateTime">
+                    <button class="btn btn-success pull-right" onclick="depositAmount(this)">Add</button>
                 </form>
             </div>
         </div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace MoneyApp.Dto
@@ -7,16 +8,13 @@ namespace MoneyApp.Dto
     public class MoneySpentItemDto
     {
         [JsonProperty("ItemName")]
-        [Required]
-        [MinLength(4)]
-        [MaxLength(20)]
-        [DataType(DataType.Text)]
+        [RegularExpression(@"^[A-Z]{1}[A-Za-z]{3,20}$")]
         public string ItemName { get; set; }
         [JsonProperty("ItemCost")]
-        [Required]
-        [DataType(DataType.Currency)]
+        [RegularExpression(@"^[0-9]{1,4}(\.[0-9]{1,2})?$")]
         public float ItemCost { get; set; }
         [JsonProperty("DateTime")]
+        [DataType(DataType.DateTime)]
         public DateTime DateTime { get; set; }
     }
 }

@@ -5,10 +5,7 @@ namespace MoneyApp.Interfaces
 {
     public interface IAccount
     {
-        [Required]
-        [MinLength(7)]
-        [MaxLength(20)]
-        [DataType(DataType.Text)]
+        [RegularExpression(@"^[A-Z]{1}[A-Za-z]{6,20}$")]
         string AccountName { get; set; }
         
         float AccountBalance { get; set; }

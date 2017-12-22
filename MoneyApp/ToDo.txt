@@ -11,13 +11,12 @@
 A user post a username and a password, their Guid is then hashed and can only be unlocked using there username and password.
 jwt (jot) tokens
 
-Create a service layer for controllers to access repos or rest apis.
-Remove all bools in service layers and repos and chnage to throw specific errors.
-Is there a way for the app to handle all errors in a set way.
-Put dtos in the repo/service layer.
-
 bug - when user money account deleted, user still hold money account guid.
 1. when money account deleted, delete users account guid.
 2. check money account in the user exists automaticallly.
 
-1. Add validation to server side
+0. make accounts scrollable or in pages
+0. add datetime entries based on date and hour and min.
+1. add passwords your way
+2. try hashing
+3 try jot tokens

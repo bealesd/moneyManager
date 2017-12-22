@@ -7,10 +7,7 @@ namespace MoneyApp.Interfaces
     public interface IUser
     {
         Guid UserGuid { get; set; }
-        [Required]
-        [MinLength(7)]
-        [MaxLength(20)]
-        [DataType(DataType.Text)]
+        [RegularExpression(@"^[A-Z]{1}[A-Za-z]{6,20}$")]
         string Username { get; set; }
         List<Guid> AccountGuid { get; set; }
     }
