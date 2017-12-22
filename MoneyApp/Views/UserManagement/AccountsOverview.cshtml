@@ -1,14 +1,18 @@
 ﻿@using MoneyApp.Dto;
 @using System.Linq;
+@using Newtonsoft.Json
 @model MoneyApp.Dto.UserDto
 
 @{
     ViewBag.Title = "Accounts Overview";
     UserDto user = @Model;
-    var a = user.Accounts.Take(10).ToList();
+    var a = user.Accounts.Take(10);
 }
 
 <div class="loginBox">
+    
+    @* Make a dynamic list based on a date range, possibly load 10 items *@
+    <button id="1" onclick="LoadFirstTen()">Load First Ten Rows</button>
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
@@ -24,12 +28,7 @@
                 <tbody>
                 @{int count = 0;}
                     
-                @* Make a dynamic list based on a date range, possibly load 10 items *@
-                <tr>
-                    <td>
-                        <a onclick="function(){ alert('a'); }">Load First Ten Rows</a>
-                    </td>
-                </tr>
+                
 
                 @foreach (var account in Model.Accounts)
                 {
@@ -112,7 +111,17 @@
 
 </div>
 
-<script>
+<script type="text/javascript">
+    var accountNames = '@JsonConvert.SerializeObject(Model.Accounts.Select(ac => ac.AccountName).ToList())';
+
+    function LoadFirstTen() {
+        alert("loaded");
+        //var arr = JSON.parse(accountNames);
+        alert(accountNames);
+        alert(arr[0]);
+    }
+
+
     function LoadAccountPage(row) {
         row.parentElement.getElementsByTagName("a")[0].click();
     }
