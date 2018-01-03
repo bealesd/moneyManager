@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Http;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
 
+// look at cookies for user GUID storage.
 namespace MoneyApp.Controllers
 {
-    public class UserManagementController : Controller
+    public class UIController : Controller
     {
         private string _apiPath;
         private HttpClient _client;
         private IUserApiService _userApiService;
 
-        public UserManagementController(IUserApiService userApiService)
+        public UIController(IUserApiService userApiService)
         {
             _apiPath = "http://localhost:37266/api";
             _client = new HttpClient();
@@ -33,8 +34,8 @@ namespace MoneyApp.Controllers
             {
                 _userApiService.CreateUser(username, password);
                 var userGuid = _userApiService.GetUserGuid(username, password);
+                HttpContext.Session.SetString("userGuid", userGuid.ToString());
                 return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = 0 });
-                //return RedirectToAction(nameof(UserAccountsPage), new { username, password, postion = 0 });
             }
             catch (Exception)
             {
@@ -49,8 +50,9 @@ namespace MoneyApp.Controllers
             return View("RegisterUserView");
         }
 
-        public IActionResult DeleteUser(Guid userGuid)
+        public IActionResult DeleteUser()
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             try
             {
                 _userApiService.DeleteUser(userGuid);
@@ -67,7 +69,8 @@ namespace MoneyApp.Controllers
             try
             {
                 var userGuid = _userApiService.GetUserGuid(username, password);
-                return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = 0 });
+                HttpContext.Session.SetString("userGuid", userGuid.ToString());
+                return UserAccountsPage(0);
             }
             catch (Exception)
             {
@@ -75,15 +78,14 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult UserAccountsPage(Guid userGuid, int postion)
+        public IActionResult UserAccountsPage(int postion)
         {
             try
             {
-                //var userGuid = _userApiService.GetUserGuid(username, password);
+                Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
                 var userDto = _userApiService.GetUserDto(userGuid);
                 dynamic accoutsOverviewModel = new ExpandoObject();
                 accoutsOverviewModel.user = userDto;
-                //accoutsOverviewModel.password = password;
                 accoutsOverviewModel.accountsIndex = postion;
                 return View("AccountsOverview", accoutsOverviewModel);
             }
@@ -95,10 +97,11 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult UserAccountsIndex(Guid userGuid)
+        public IActionResult UserAccountsIndex()
         {
             try
             {
+                Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
                 var userDto = _userApiService.GetUserDto(userGuid);
                 int accountsPosition;
 
@@ -117,8 +120,11 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult AccountPage(Guid accountGuid, Guid userGuid, int position)
+        public IActionResult AccountPage(Guid accountGuid, int position)
         {
+            //HttpContext.Session.SetString("userGuid", userGuid.ToString());
+
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
@@ -127,18 +133,17 @@ namespace MoneyApp.Controllers
                 accountModel.account = account;
                 accountModel.position = position;
                 accountModel.user = userDto;
-                //accountModel.password = password;
                 return View("AccountView", accountModel);
             }
             catch (Exception)
             {
-                //return View("AccountsOverview", userDto);
                 return RedirectToAction(nameof(UserAccountsIndex), userGuid);
             }
         }
 
-        public IActionResult UserAccountIndex(Guid accountGuid, Guid userGuid)
+        public IActionResult UserAccountIndex(Guid accountGuid)
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
@@ -157,8 +162,9 @@ namespace MoneyApp.Controllers
             }
         }
 
-        public IActionResult DeleteMoneyAccountFromUser(Guid accountGuid, Guid userGuid)
+        public IActionResult DeleteMoneyAccountFromUser(Guid accountGuid)
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
@@ -168,8 +174,9 @@ namespace MoneyApp.Controllers
             return RedirectToAction(nameof(UserAccountsPage), new { postion = Convert.ToInt32(GetAccountsPositon("accountPosition")), userGuid });
         }
 
-        public IActionResult CreateMoneyAccountForUser(string accountName, Guid userGuid)
+        public IActionResult CreateMoneyAccountForUser(string accountName)
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
@@ -179,30 +186,29 @@ namespace MoneyApp.Controllers
             return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = 0 });
         }
 
-        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName, DateTime dateTime, Guid userGuid)
+        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             try
             {
                 var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = dateTime };
                 _userApiService.CreateMoneySpentItem(accountGuid, moneySpentItem);
-                //return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
             catch (Exception)
             {
-                //return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
             return RedirectToAction(nameof(AccountPage), new { accountGuid, userGuid, position = 0 });
         }
 
-        public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid, Guid userGuid)
+        public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
+            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             try
             {
                 _userApiService.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
             }
             catch (Exception)
             {
-                //return RedirectToAction(nameof(AccountPage), new { accountGuid });
             }
             return RedirectToAction(nameof(AccountPage), new { accountGuid, position = 0, userGuid });
         }
@@ -216,6 +222,5 @@ namespace MoneyApp.Controllers
         {
             HttpContext.Session.SetString(key, position.ToString());
         }
-
     }
 }

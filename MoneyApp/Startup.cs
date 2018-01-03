@@ -30,13 +30,6 @@ namespace MoneyApp
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
 
-            //services.AddSingleton<IAdapterRepo>(new AdapterRepo
-            //(
-            //    new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
-            //    new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt")),
-            //    new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt"))
-            //));
-
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
                                                         new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
@@ -64,7 +57,7 @@ namespace MoneyApp
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action}",
-                    defaults: new { controller = "UserManagement", action = "LoginPage" });
+                    defaults: new { controller = "UI", action = "LoginPage" });
             });
 
             app.UseSwagger();

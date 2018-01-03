@@ -28,14 +28,6 @@ namespace MoneyApp.Repos
             return _userRepo.GetUser(userGuid);
         }
 
-        //public IUser UserLogin(Guid userGuid)
-        //{
-        //    // should return a userGuid, get user should be called separately.
-        //    // In fact I need to separate out the userLogin repo from the adapter repo.
-        //    //var userGuid = _userLoginRepo.GetUserGuid(username, password);
-        //    return GetUser(userGuid);
-        //}
-
         private void HarmonizeUserMoneyAccounts(Guid userGuid)
         {
             var user = _userRepo.GetUser(userGuid);
@@ -60,7 +52,6 @@ namespace MoneyApp.Repos
         public void CreateUser(string username, Guid userGuid)
         {
             _userRepo.CreateUser(username, userGuid);
-            //_userLoginRepo.CreateUser(username, password, userGuid);
         }
 
         public void DeleteUser(Guid userGuid)
@@ -69,7 +60,6 @@ namespace MoneyApp.Repos
                 throw new Exception();
 
             _userRepo.DeleteUser(userGuid);
-            //_userLoginRepo.DeleteUser(userGuid);
         }
 
         public IAccount GetMoneyAccount(Guid accountGuid)

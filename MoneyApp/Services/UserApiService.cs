@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
 using MoneyApp.Models;
@@ -42,7 +39,6 @@ namespace MoneyApp.Services
 
         public void DeleteUser(Guid userGuid)
         {
-            //var userGuid = this.GetUser(username, password).UserGuid;
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
@@ -83,9 +79,8 @@ namespace MoneyApp.Services
                 throw new Exception();
         }
 
-        public void CreateMoneyAccountForUser(string accountName, Guid userGuid)//Guid userGuid, string accountName)
+        public void CreateMoneyAccountForUser(string accountName, Guid userGuid)
         {
-            //{ username}/{ password}/{ accountName}                {userGuid}/{accountName}
             var httpResponse = _client.PostAsync($"{_apiPath}/user/account/{userGuid}/{accountName}", null).Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();

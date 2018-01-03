@@ -85,13 +85,6 @@ namespace MoneyApp.Controllers
             }
         }
 
-        ////api/person/byName?firstName=a&lastName=b
-        //[HttpGet("byName")]
-        //public string Get(string firstName, string lastName, string address)
-        //{
-        //}
-        // api/person/david?password = 1234/myAccount
-        // PUT api/user/username/accountname
         [HttpPost("account/{userGuid}/{accountName}")]
         public IActionResult CreateMoneyAccount(string accountName, Guid userGuid)
         {
