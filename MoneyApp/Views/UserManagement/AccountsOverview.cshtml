@@ -2,21 +2,18 @@
 @using System.Linq;
 
 @using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
 @model dynamic
 
 @{
     ViewBag.Title = "Accounts Overview";
     UserDto user = @Model.user;
-    var accountsPosition = (int)@Model.accountsIndex;
+    var accountsPosition = (int) @Model.accountsIndex;
     var accounts = user.Accounts.Skip(accountsPosition);
-    //string password = @Model.password;
-
-=======
-
+}
 
 <div class="loginBox">
     
-    @* Make a dynamic list based on a date range, possibly load 10 items *@
     <button id="1" onclick="LoadFirstTen()">Load First Ten Rows</button>
 
     <div class="row">
@@ -93,8 +90,6 @@
 </div>
 
 <script type="text/javascript">
-    var accountNames = '@JsonConvert.SerializeObject(Model.Accounts.Select(ac => ac.AccountName).ToList())';
-
     function LoadFirstTen() {
         alert("loaded");
         //var arr = JSON.parse(accountNames);
