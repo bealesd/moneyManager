@@ -21,6 +21,7 @@ namespace MoneyApp.Repos
         }
         public void Save()
         {
+            _accounts = _accounts.OrderBy(a => a.AccountName).ToList();
             _readerWriter.WriteEnumerable(_filePath, _accounts);
         }
 

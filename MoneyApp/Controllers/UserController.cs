@@ -9,10 +9,12 @@ namespace MoneyApp.Controllers
     public class UserController : Controller
     {
         private IAdapterRepo _adapterRepo;
+        private IUserLogin _userLogin;
 
-        public UserController(IAdapterRepo adapterRepo)
+        public UserController(IAdapterRepo adapterRepo, IUserLogin userLogin)
         {
             _adapterRepo = adapterRepo;
+            _userLogin = userLogin;
         }
 
         //api/user
@@ -22,13 +24,27 @@ namespace MoneyApp.Controllers
             return new ObjectResult(_adapterRepo.GetAllUsers());
         }
 
-        //api/user/dave
-        [HttpGet("{username}")]
-        public IActionResult GetUser(string username)
+        [HttpGet("{username}/{password}")]
+        public IActionResult GetUserGuid(string username, string password)
         {
             try
             {
-                var user = _adapterRepo.UserLogin(username);
+                var userGuid = _userLogin.GetUserGuid(username, password);
+                return userGuid == Guid.Empty ? BadRequest("Could Not Get User Guid") : new ObjectResult(userGuid);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Could Not Get User Guid");
+            }
+        }
+
+        //api/user/dave
+        [HttpGet("{userGuid}")]
+        public IActionResult GetUser(Guid userGuid)
+        {
+            try
+            {
+                var user = _adapterRepo.GetUser(userGuid);
                 return user == null ? BadRequest("Could Not Get User") : new ObjectResult(user);
             }
             catch (Exception)
@@ -38,13 +54,15 @@ namespace MoneyApp.Controllers
         }
 
         //api/user/dave
-        [HttpPost("{username}")]
-        public IActionResult PostUser(string username)
+        [HttpPost("{username}/{password}")]
+        public IActionResult PostUser(string username, string password)
         {
             try
             {
-                _adapterRepo.CreateUser(username);
-                return RedirectToAction(nameof(GetUser), new { username });
+                _userLogin.CreateUser(username, password);
+                var userGuid = _userLogin.GetUserGuid(username, password);
+                _adapterRepo.CreateUser(username, userGuid);
+                return RedirectToAction(nameof(GetUser), new { userGuid });
             }
             catch (Exception)
             {
@@ -57,6 +75,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
+                _userLogin.DeleteUser(userGuid);
                 _adapterRepo.DeleteUser(userGuid);
                 return RedirectToAction(nameof(GetUsers));
             }
@@ -66,13 +85,20 @@ namespace MoneyApp.Controllers
             }
         }
 
+        ////api/person/byName?firstName=a&lastName=b
+        //[HttpGet("byName")]
+        //public string Get(string firstName, string lastName, string address)
+        //{
+        //}
+        // api/person/david?password = 1234/myAccount
         // PUT api/user/username/accountname
-        [HttpPost("{userGuid}/{accountName}")]
-        public IActionResult CreateMoneyAccount(Guid userGuid, string accountName)
+        [HttpPost("account/{userGuid}/{accountName}")]
+        public IActionResult CreateMoneyAccount(string accountName, Guid userGuid)
         {
             try
             {
-                _adapterRepo.CreateMoneyAccountForUser(userGuid, accountName);
+                var user = _adapterRepo.GetUser(userGuid);
+                _adapterRepo.CreateMoneyAccountForUser(user.UserGuid, accountName);
                 return RedirectToAction(nameof(GetUser), new { userGuid });
             }
             catch (Exception)
@@ -113,10 +139,6 @@ namespace MoneyApp.Controllers
         [HttpPost("account/{accountGuid}")]//{ "ItemName": "PS1","ItemCost": "200.0", "DateTime": "2017-12-13T15:10:43.511Z" }
         public IActionResult AddMoneySpentItem(Guid accountGuid, [FromBody] MoneySpentItemDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Could Not Create Money Item");
-            }
             try
             {
                 _adapterRepo.CreateMoneySpentItem(accountGuid, model.ItemName, model.ItemCost, model.DateTime);

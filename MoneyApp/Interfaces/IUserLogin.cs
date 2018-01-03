@@ -7,7 +7,8 @@ namespace MoneyApp.Interfaces
 {
     public interface IUserLogin
     {
-        void CreateUser(string username, Guid userGuid);
-        Guid GetUserGuid(string username);
+        void CreateUser(string username, string password);
+        Guid GetUserGuid(string username, string password);
+        void DeleteUser(Guid userGuid);//string username, string password
     }
 }

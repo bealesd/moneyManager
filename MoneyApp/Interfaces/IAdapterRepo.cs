@@ -14,8 +14,8 @@ namespace MoneyApp.Interfaces
         void DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid);
         IEnumerable<IUser> GetAllUsers();
         IUser GetUser(Guid userGuid);
-        IUser UserLogin(string username);
-        void CreateUser(string username);
+        //IUser UserLogin(string username, string password);
+        void CreateUser(string username, Guid userGuid);
         void DeleteUser(Guid userGuid);
     }
 }

@@ -11,13 +11,11 @@ namespace MoneyApp.Repos
     {
         private IUserRepo _userRepo;
         private IAccountRepo _accountRepo;
-        private UserLoginRepo _userLoginRepo;
 
-        public AdapterRepo(IUserRepo userRepo, IAccountRepo accountRepo, UserLoginRepo userLoginRepo)
+        public AdapterRepo(IUserRepo userRepo, IAccountRepo accountRepo)
         {
             _userRepo = userRepo;
             _accountRepo = accountRepo;
-            _userLoginRepo = userLoginRepo;
         }
 
         public IUser GetUser(Guid userGuid)
@@ -28,14 +26,15 @@ namespace MoneyApp.Repos
             }
             HarmonizeUserMoneyAccounts(userGuid);
             return _userRepo.GetUser(userGuid);
-            //return userGuid == Guid.Empty ? throw new Exception() : _userRepo.GetUser(userGuid);
         }
 
-        public IUser UserLogin(string username)
-        {// add a password, which is checked against a hashed table, if password/username correct return account Guids, which are hashed using the password.
-            var userGuid = _userLoginRepo.GetUserGuid(username);
-            return GetUser(userGuid);
-        }
+        //public IUser UserLogin(Guid userGuid)
+        //{
+        //    // should return a userGuid, get user should be called separately.
+        //    // In fact I need to separate out the userLogin repo from the adapter repo.
+        //    //var userGuid = _userLoginRepo.GetUserGuid(username, password);
+        //    return GetUser(userGuid);
+        //}
 
         private void HarmonizeUserMoneyAccounts(Guid userGuid)
         {
@@ -58,10 +57,10 @@ namespace MoneyApp.Repos
             return _userRepo.GetAllUsers();
         }
 
-        public void CreateUser(string username)
+        public void CreateUser(string username, Guid userGuid)
         {
-            var userGuid = _userRepo.CreateUser(username);
-            _userLoginRepo.CreateUser(username, userGuid);
+            _userRepo.CreateUser(username, userGuid);
+            //_userLoginRepo.CreateUser(username, password, userGuid);
         }
 
         public void DeleteUser(Guid userGuid)
@@ -70,6 +69,7 @@ namespace MoneyApp.Repos
                 throw new Exception();
 
             _userRepo.DeleteUser(userGuid);
+            //_userLoginRepo.DeleteUser(userGuid);
         }
 
         public IAccount GetMoneyAccount(Guid accountGuid)
