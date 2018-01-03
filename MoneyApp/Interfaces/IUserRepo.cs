@@ -12,7 +12,7 @@ namespace MoneyApp.Repos
     {
         IEnumerable<IUser> GetAllUsers();
         User GetUser(Guid userGuid);
-        Guid CreateUser(string username);
+        void CreateUser(string username, Guid userGuid);
         void DeleteUser(Guid userGuid);
         void Save();
         void Load();

@@ -36,20 +36,19 @@ namespace MoneyApp.Repos
                 _users = loadedUsers.ToList();
         }
 
-        public Guid CreateUser(string username)
+        public void CreateUser(string username, Guid userGuid)
         {
             if (_users.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
                 throw new Exception();
 
             var newUser = new User()
             {
-                UserGuid = Guid.NewGuid(),
+                UserGuid = userGuid,
                 Username = username,
                 AccountGuid = new List<Guid>()
             };
             _users.Add(newUser);
             Save();
-            return newUser.UserGuid;
         }
 
         public void AddAccountToUser(Guid userGuid, Guid accountGuid)

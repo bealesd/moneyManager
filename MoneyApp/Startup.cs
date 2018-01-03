@@ -26,16 +26,24 @@ namespace MoneyApp
             services.AddMvc();
             //.AddSessionStateTempDataProvider();
 
-            //services.AddSession();
+            services.AddSession();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
+
+            //services.AddSingleton<IAdapterRepo>(new AdapterRepo
+            //(
+            //    new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
+            //    new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt")),
+            //    new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt"))
+            //));
 
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
                                                         new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
-                                                        new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt")),
-                                                        new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt"))
+                                                        new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt"))
                                                     ));
+
+            services.AddSingleton<IUserLogin>(new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt")));
             //services.AddSingleton<ISessionHandler>();
             services.AddSingleton<IUserApiService>(new UserApiService());
         }
@@ -49,7 +57,7 @@ namespace MoneyApp
             }
 
             app.UseStaticFiles();
-            //app.UseSession();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

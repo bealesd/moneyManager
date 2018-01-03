@@ -14,7 +14,7 @@ namespace MoneyApp.Repos
         private IReaderWriter _readerWriter;
         private string _filePath;
         private List<UserCredentials> _userCredentials = new List<UserCredentials>();
-
+        //Remove passwords from each view and hide url data.
         public UserLoginRepo(IReaderWriter readerWriter, string filePath)
         {
             _readerWriter = readerWriter;
@@ -32,19 +32,30 @@ namespace MoneyApp.Repos
             if (loadedUsers != null)
                 _userCredentials = loadedUsers.ToList();
         }
-        public void CreateUser(string username, Guid userGuid)
+        public void CreateUser(string username, string password)
         {
-            var newUserCredentials = new UserCredentials(){Username = username, UserGuid = userGuid};
+            var userGuid = Guid.NewGuid();
+            var newUserCredentials = new UserCredentials(){Username = username, UserGuid = userGuid, Password = password};
             _userCredentials.Add(newUserCredentials);
             Save();
         }
 
-        public Guid GetUserGuid(string username)
+        public Guid GetUserGuid(string username, string password)
         {
-            var userCredentials = _userCredentials.FirstOrDefault(u => u.Username == username);
+            var userCredentials = _userCredentials.FirstOrDefault(u => u.Username == username && u.Password == password);
             if (userCredentials == null)
                 return Guid.Empty;
             return userCredentials.UserGuid;
+        }
+
+        public void DeleteUser(Guid userGuid)//string username, string password
+        {
+            var userCredentials = _userCredentials.FirstOrDefault(u => u.UserGuid == userGuid);
+            if (userCredentials != null)
+            {
+                _userCredentials.Remove(userCredentials);
+            }
+            Save();
         }
     }
 }

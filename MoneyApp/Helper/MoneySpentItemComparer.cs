@@ -8,7 +8,7 @@ namespace MoneyApp.Helper
     {
         public int Compare(MoneySpentItem item1, MoneySpentItem item2)
         {
-            return DateTime.Compare(item1.Datetime, item2.Datetime);
+            return DateTime.Compare(item2.Datetime, item1.Datetime);
         }
     }
 }

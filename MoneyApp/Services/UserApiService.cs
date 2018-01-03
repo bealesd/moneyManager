@@ -22,39 +22,51 @@ namespace MoneyApp.Services
             _apiPath = "http://localhost:37266/api";
             _client = new HttpClient();
         }
-        public IUser CreateUser(string username)
+        public IUser CreateUser(string username, string password)
         {
-            string path = $"{_apiPath}/user/{username}";
+            string path = $"{_apiPath}/user/{username}/{password}";
             var httpResponse = _client.PostAsync(path, null).Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
             return httpResponse.Content.ReadAsAsync<User>().Result;
         }
 
-        public UserDto GetUserDto(string username)
+        public UserDto GetUserDto(Guid userGuid)
         {
-            var user = GetUser(username);
+            var user = GetUser(userGuid);
             var userDto = new UserDto() { Username = user.Username, UserGuid = user.UserGuid, Accounts = new List<Account>() };
             user.AccountGuid.ForEach(guid => userDto.Accounts.Add(LoadMoneyAccount(guid)));
             return userDto;
         }
 
-        public void DeleteUser(string username)
+
+        public void DeleteUser(Guid userGuid)
         {
-            var userGuid = this.GetUser(username).UserGuid;
+            //var userGuid = this.GetUser(username, password).UserGuid;
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
         }
 
-        private User GetUser(string username)
+
+        private User GetUser(Guid userGuid)
         {
-            var httpResponse = _client.GetAsync($"{_apiPath}/user/{username}").Result;
+            var httpResponse = _client.GetAsync($"{_apiPath}/user/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
 
             return httpResponse.Content.ReadAsAsync<User>().Result;
         }
+
+        public Guid GetUserGuid(string username, string password)
+        {
+            var httpResponse = _client.GetAsync($"{_apiPath}/user/{username}/{password}").Result;
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception();
+
+            return httpResponse.Content.ReadAsAsync<Guid>().Result;
+        }
+
 
         public Account LoadMoneyAccount(Guid accountGuid)
         {
@@ -71,9 +83,10 @@ namespace MoneyApp.Services
                 throw new Exception();
         }
 
-        public void CreateMoneyAccountForUser(Guid userGuid, string accountName)
+        public void CreateMoneyAccountForUser(string accountName, Guid userGuid)//Guid userGuid, string accountName)
         {
-            var httpResponse = _client.PostAsync($"{_apiPath}/user/{userGuid}/{accountName}", null).Result;
+            //{ username}/{ password}/{ accountName}                {userGuid}/{accountName}
+            var httpResponse = _client.PostAsync($"{_apiPath}/user/account/{userGuid}/{accountName}", null).Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
         }
