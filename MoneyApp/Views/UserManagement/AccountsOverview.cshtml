@@ -1,20 +1,15 @@
 ﻿@using MoneyApp.Dto;
 @using System.Linq;
-
-@using Microsoft.AspNetCore.Http
-@using Newtonsoft.Json
 @model dynamic
 
 @{
     ViewBag.Title = "Accounts Overview";
     UserDto user = @Model.user;
-    var accountsPosition = (int) @Model.accountsIndex;
+    var accountsPosition = (int)@Model.accountsIndex;
     var accounts = user.Accounts.Skip(accountsPosition);
 }
 
 <div class="loginBox">
-    
-    <button id="1" onclick="LoadFirstTen()">Load First Ten Rows</button>
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
@@ -28,35 +23,31 @@
         <div class="col-xs-offset-1 col-xs-10 ">
             <table class="table table-hover table-borderless">
                 <tbody>
+                @{int count = 0;}
 
-                    @{int count = 0;}
+                @foreach (var account in accounts.Take(10))
+                {
+                    <tr>
+                        <td onclick="LoadAccountPage(this)">@account.AccountName</td>
 
-
-
-
-                    @foreach (var account in accounts.Take(10))
-                    {
-                        <tr>
-                            <td onclick="LoadAccountPage(this)">@account.AccountName</td>
-
-                            @if (account.AccountBalance < 0)
-                            {
-                                <td onclick="LoadAccountPage(this)" class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
-                            }
-                            @if (account.AccountBalance >= 0)
-                            {
-                                <td onclick="LoadAccountPage(this)" class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
-                            }
-                            <td onclick="LoadAccountPage(this)" class="col-xs-2">
-                                <a id="go" asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userGuid="@user.UserGuid" asp-route-position="0"></a>
-                            </td>
-                            <td>
-                                <a onclick="ConfirmDelete('Delete Money Account?')" class="glyphicon glyphicon-remove"
-                                   asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-userGuid="@user.UserGuid"></a>
-                            </td>
-                        </tr>
-                    }
-                    <tr><td><a asp-action="UserAccountsIndex" asp-route-userGuid="@user.UserGuid">More</a></td></tr>
+                        @if (account.AccountBalance < 0)
+                        {
+                            <td onclick="LoadAccountPage(this)" class="tdRed">@Math.Abs(account.AccountBalance) dr</td>
+                        }
+                        @if (account.AccountBalance >= 0)
+                        {
+                            <td onclick="LoadAccountPage(this)" class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
+                        }
+                        <td onclick="LoadAccountPage(this)" class="col-xs-2">
+                            <a id="go" asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" asp-route-userGuid="@user.UserGuid" asp-route-position="0"></a>
+                        </td>
+                        <td>
+                            <a onclick="ConfirmDelete('Delete Money Account?')" class="glyphicon glyphicon-remove"
+                               asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" asp-route-userGuid="@user.UserGuid"></a>
+                        </td>
+                    </tr>
+                }
+                <tr><td><a asp-action="UserAccountsIndex" asp-route-userGuid="@user.UserGuid">More</a></td></tr>
                 </tbody>
             </table>
         </div>
@@ -89,15 +80,7 @@
 
 </div>
 
-<script type="text/javascript">
-    function LoadFirstTen() {
-        alert("loaded");
-        //var arr = JSON.parse(accountNames);
-        alert(accountNames);
-        alert(arr[0]);
-    }
-
-
+<script>
     function LoadAccountPage(row) {
         row.parentElement.getElementsByTagName("a")[0].click();
     }
