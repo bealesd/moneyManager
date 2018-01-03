@@ -19,4 +19,4 @@ bug - when user money account deleted, user still hold money account guid.
 0. add datetime entries based on date and hour and min.
 1. add passwords your way
 2. try hashing
-3 try jot tokens
+3  try jot tokens
