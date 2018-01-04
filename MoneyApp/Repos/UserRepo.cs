@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using MoneyApp.Helper;
 using MoneyApp.Interfaces;
 using MoneyApp.IO;
 using MoneyApp.Models;
-using Newtonsoft.Json;
 
 namespace MoneyApp.Repos
 {
@@ -77,7 +74,7 @@ namespace MoneyApp.Repos
             Save();
         }
 
-        public void RemoveAccountFromUser(Guid userGuid, Guid accountGuid)
+        public void RemoveAccount(Guid userGuid, Guid accountGuid)
         {
             this.GetUser(userGuid).AccountGuid.Remove(accountGuid);
             Save();

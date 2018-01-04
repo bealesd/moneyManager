@@ -39,7 +39,7 @@ namespace MoneyApp.Repos
                 }
                 catch (Exception)
                 {
-                    this.RemoveMoneyAccountFromUser(userGuid, accountGuid);
+                    this.RemoveAccount(userGuid, accountGuid);
                 }
             }
         }
@@ -81,16 +81,16 @@ namespace MoneyApp.Repos
             _userRepo.AddAccountToUser(userGuid, CreateMoneyAccount(accountName));
         }
 
-        private void DeleteMoneyAccount(Guid accountGuid)
+        private void DeleteAccount(Guid accountGuid)
         {
             _accountRepo.DeleteMoneyAccount(accountGuid);
         }
 
-        public void RemoveMoneyAccountFromUser(Guid userGuid, Guid accountGuid)
+        public void RemoveAccount(Guid userGuid, Guid accountGuid)
         {
-            _userRepo.RemoveAccountFromUser(userGuid, accountGuid);
+            _userRepo.RemoveAccount(userGuid, accountGuid);
             if (!this.IsLinkedAccount(accountGuid))
-                this.DeleteMoneyAccount(accountGuid);
+                this.DeleteAccount(accountGuid);
         }
 
         private bool IsLinkedAccount(Guid accountGuid)
@@ -99,7 +99,7 @@ namespace MoneyApp.Repos
             return users.Count(u => Equals(u.AccountGuid, accountGuid)) > 1;
         }
 
-        public void CreateMoneySpentItem(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
+        public void CreateTransaction(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
             if (!itemCost.ValidFloat())
                 throw new Exception();
@@ -107,7 +107,7 @@ namespace MoneyApp.Repos
             _accountRepo.CreateMoneySpentItem(accountGuid, itemName, itemCost, dateTime);
         }
 
-        public void DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
+        public void DeleteTransaction(Guid accountGuid, Guid moneyItemGuid)
         {
             _accountRepo.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
         }

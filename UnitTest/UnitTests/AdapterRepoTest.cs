@@ -104,11 +104,11 @@ namespace UnitTest.UnitTests
             var account = new Account() { AccountGuid = _user.AccountGuid[0], AccountName = "davesAccount" };
             A.CallTo(() => _fakeIUserRepo.GetUser(_user.UserGuid)).Returns(_user);
             A.CallTo(() => _fakeIAccountRepo.GetMoneyAccount(account.AccountGuid)).Returns(account);
-            A.CallTo(() => _fakeIUserRepo.RemoveAccountFromUser(_user.UserGuid, account.AccountGuid)).Returns(true);
+            A.CallTo(() => _fakeIUserRepo.RemoveAccount(_user.UserGuid, account.AccountGuid)).Returns(true);
             A.CallTo(() => _fakeIAccountRepo.DeleteMoneyAccount(account.AccountGuid)).Returns(true);
 
             var adapterRepo = new AdapterRepo(_fakeIUserRepo, _fakeIAccountRepo);
-            var isAccountRemoved = adapterRepo.RemoveMoneyAccountFromUser(_user.UserGuid, account.AccountGuid);
+            var isAccountRemoved = adapterRepo.RemoveAccount(_user.UserGuid, account.AccountGuid);
 
             Assert.That(true, Is.EqualTo(isAccountRemoved));
         }

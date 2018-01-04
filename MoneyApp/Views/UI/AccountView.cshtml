@@ -1,12 +1,12 @@
 ﻿@using MoneyApp.Dto
 @using MoneyApp.Models
-@model dynamic
+
 @{
-    Account account = @Model.account;
-    int position = @Model.position;
-    UserDto userDto = @Model.user;
+    UserDto userDto = ViewBag.user;
+    int position = Convert.ToInt32(ViewBag.accountPosition);
+    Account account = ViewBag.account;
 }
-<div class="loginBox">
+
 
     <div class="row">
         <div class="col-xs-10 col-xs-offset-1">
@@ -34,7 +34,7 @@
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
                                 <td class="tdRed">@Math.Abs(moneySpentItem.ItemCost) DR</td>
-                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteMoneySpentItem" asp-route-accountGuid="@account.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid" @*asp-route-userGuid="@userDto.UserGuid"*@></a></td>
+                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteTransaction" asp-route-accountGuid="@account.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid" @*asp-route-userGuid="@userDto.UserGuid"*@></a></td>
                             </tr>
                         }
                         else
@@ -43,11 +43,11 @@
                                 <td>@moneySpentItem.Datetime</td>
                                 <td>@moneySpentItem.ItemName</td>
                                 <td class="tdGreen">@Math.Abs(moneySpentItem.ItemCost) CR</td>
-                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteMoneySpentItem" asp-route-accountGuid="@account.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid" @*asp-route-userGuid="@userDto.UserGuid"*@></a></td>
+                                <td><a onclick="ConfirmDelete('Delete Money Item?')" class="glyphicon glyphicon-remove" asp-action="DeleteTransaction" asp-route-accountGuid="@account.AccountGuid" asp-route-moneyItemGuid="@moneySpentItem.MoneySpentItemGuid" @*asp-route-userGuid="@userDto.UserGuid"*@></a></td>
                             </tr>
                         }
                     }
-                <tr><td><a asp-action="UserAccountIndex" @*asp-route-userGuid="@userDto.UserGuid"*@ asp-route-accountGuid="@account.AccountGuid">More</a></td></tr>
+                <tr><td><a asp-action="PaginateAccount" @*asp-route-userGuid="@userDto.UserGuid"*@ asp-route-accountGuid="@account.AccountGuid">More</a></td></tr>
                 </tbody>
             </table>
         </div>
@@ -56,7 +56,7 @@
     <div class="row">
         <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
             <h4>Expense</h4>
-            <form asp-action="CreateMoneySpentItem" , asp-route-accountGuid="@account.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime @*asp-route-userGuid="@userDto.UserGuid"*@>
+            <form asp-action="CreateTransaction" , asp-route-accountGuid="@account.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime @*asp-route-userGuid="@userDto.UserGuid"*@>
                 <input class="input" type="text" placeholder="FoodShop" name="itemName" /><br /><br />
                 <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
                 <input class="input" type="datetime-local" name="dateTime">
@@ -67,7 +67,7 @@
         <div class="col-xs-offset-2 col-xs-4 insertMoneyItem">
             <div class="pull-right">
                 <h4>Deposit</h4>
-                <form name="deposit" method="post" asp-action="CreateMoneySpentItem" asp-route-accountGuid="@account.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime @*asp-route-userGuid="@userDto.UserGuid"*@>
+                <form name="deposit" method="post" asp-action="CreateTransaction" asp-route-accountGuid="@account.AccountGuid" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime @*asp-route-userGuid="@userDto.UserGuid"*@>
                     <input class="input" type="text" placeholder="BirthdayMoney" name="itemName" /><br /><br />
                     <input id="amount" class="input" type="text" placeholder="20.50" name="itemCost" /><br /><br />
                     <input class="input" type="datetime-local" name="dateTime">
@@ -78,7 +78,7 @@
     </div>
 
     <br />
-</div>
+
 
 <script>
     function depositAmount(self) {

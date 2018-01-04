@@ -39,7 +39,9 @@ namespace MoneyApp.Services
 
         public void DeleteUser(Guid userGuid)
         {
-            var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}").Result;
+            if(userGuid == Guid.Empty)
+                throw new Exception();
+            var httpResponse = _client.DeleteAsync($"{_apiPath}/user/deleteUser/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();
         }
@@ -72,8 +74,11 @@ namespace MoneyApp.Services
             return httpResponse.Content.ReadAsAsync<Account>().Result;
         }
 
-        public void DeleteMoneyAccountFromUser(Guid userGuid, Guid accountGuid)
+        public void DeleteAccount(Guid userGuid, Guid accountGuid)
         {
+            if (accountGuid == Guid.Empty)
+                throw new Exception("no accountGuid");
+            var path = $"{_apiPath}/user/{userGuid}/{accountGuid}";
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}/{accountGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
                 throw new Exception();

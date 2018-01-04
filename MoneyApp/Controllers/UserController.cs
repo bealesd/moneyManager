@@ -70,7 +70,7 @@ namespace MoneyApp.Controllers
             }
         }
 
-        [HttpDelete("{userGuid}")]
+        [HttpDelete("deleteUser/{userGuid}")]
         public IActionResult DeleteUser(Guid userGuid)
         {
             try
@@ -119,7 +119,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.RemoveMoneyAccountFromUser(userGuid, accountGuid);
+                _adapterRepo.RemoveAccount(userGuid, accountGuid);
                 return RedirectToAction(nameof(GetUser), new { userGuid });
             }
             catch (Exception)
@@ -134,7 +134,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.CreateMoneySpentItem(accountGuid, model.ItemName, model.ItemCost, model.DateTime);
+                _adapterRepo.CreateTransaction(accountGuid, model.ItemName, model.ItemCost, model.DateTime);
                 return RedirectToAction(nameof(GetMoneyAccount), accountGuid);
             }
             catch (Exception)
@@ -148,7 +148,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _adapterRepo.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
+                _adapterRepo.DeleteTransaction(accountGuid, moneyItemGuid);
                 return RedirectToAction(nameof(GetMoneyAccount), accountGuid);
             }
             catch (Exception)

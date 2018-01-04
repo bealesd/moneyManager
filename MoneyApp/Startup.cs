@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyApp.Helper;
@@ -57,7 +59,7 @@ namespace MoneyApp
                 routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action}",
-                    defaults: new { controller = "UI", action = "LoginPage" });
+                    defaults: new { controller = "UI", action = "LoadLoginView" });
             });
 
             app.UseSwagger();

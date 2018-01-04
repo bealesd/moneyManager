@@ -1,15 +1,12 @@
 ﻿@using MoneyApp.Dto;
 @using System.Linq;
-@model dynamic
 
 @{
-    ViewBag.Title = "Accounts Overview";
-    UserDto user = @Model.user;
-    var accountsPosition = (int)@Model.accountsIndex;
+    ViewBag.Title = "Overview";
+    UserDto user = ViewBag.user;
+    int accountsPosition = Convert.ToInt32(ViewBag.accountsPosition);
     var accounts = user.Accounts.Skip(accountsPosition);
 }
-
-<div class="loginBox">
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
@@ -39,15 +36,18 @@
                             <td onclick="LoadAccountPage(this)" class="tdGreen">@Math.Abs(account.AccountBalance) cr</td>
                         }
                         <td onclick="LoadAccountPage(this)" class="col-xs-2">
-                            <a id="go" asp-action="AccountPage" asp-route-accountGuid="@account.AccountGuid" @*asp-route-userGuid="@user.UserGuid"*@ asp-route-position="0"></a>
+                            
+                            <a id="go" onclick="LoadAccountPage(this)"
+                               asp-action="LoadAccountView" asp-route-accountGuid="@account.AccountGuid"></a>
+
                         </td>
                         <td>
-                            <a onclick="ConfirmDelete('Delete Money Account?')" class="glyphicon glyphicon-remove"
-                               asp-action="DeleteMoneyAccountFromUser" asp-route-accountGuid="@account.AccountGuid" @*asp-route-userGuid="@user.UserGuid"*@></a>
+                            <a onclick="ConfirmDelete('Delete Account?')" class="glyphicon glyphicon-remove"
+                               asp-action="DeleteAccount" asp-route-accountGuid="@account.AccountGuid"></a>
                         </td>
                     </tr>
                 }
-                <tr><td><a asp-action="UserAccountsIndex" @*asp-route-userGuid="@user.UserGuid"*@>More</a></td></tr>
+                <tr><td><a asp-action="PaginateOverview">More</a></td></tr>
                 </tbody>
             </table>
         </div>
@@ -55,7 +55,7 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10">
-            <form asp-action="CreateMoneyAccountForUser" @*asp-route-userGuid="@user.UserGuid"*@>
+            <form asp-action="CreateAccount">
 
                 <br />
                 <div class="col-xs-offset-6 col-xs-13">
@@ -73,11 +73,12 @@
 
     <div class="row">
         <div class="col-xs-offset-1 col-xs-10" style="text-align: right">
-            <a onclick="ConfirmDelete('Delete Your Account?')" asp-action="DeleteUser" @*asp-route-userGuid="@user.UserGuid"*@>Delete User Account</a>
+            <a onclick="ConfirmDelete('Delete User Account?')" asp-action="DeleteUser">Delete User Account</a>
         </div>
     </div>
     <br />
-</div>
+
+
 
 <script>
     function LoadAccountPage(row) {

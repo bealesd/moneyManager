@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var isLoggedIn = ViewBag.IsLoggedIn;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -73,9 +79,25 @@
     </style>
 
 
-    <br />
- 
-        @RenderBody()
+<br />
+    
+
+
+<div class="loginBox">
+    <div class="navbar-header">
+        @if (isLoggedIn == "true")
+        {
+            <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Logout</a>
+            <a class="navbar-brand" asp-controller="UI" asp-action="LoadOverview">Accounts</a>
+        }
+        @if (isLoggedIn == "false")
+        {
+            <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Login</a>
+            <a class="navbar-brand" asp-controller="UI" asp-action="LoadRegisterUserView">Register</a>
+        }
+    </div>
+    @RenderBody()
+</div>
 
     @*<div class="container">
             <div class="jumbotron">

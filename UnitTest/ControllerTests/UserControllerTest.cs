@@ -111,12 +111,12 @@ namespace UnitTest.ControllerTests
         {
             var account = new Account() { AccountGuid = Guid.NewGuid(), AccountName = "isa" };
             var fakeAdapterRepo = A.Fake<IAdapterRepo>();
-            A.CallTo(() => fakeAdapterRepo.RemoveMoneyAccountFromUser(_user.UserGuid, account.AccountGuid)).Returns(true);
+            A.CallTo(() => fakeAdapterRepo.RemoveAccount(_user.UserGuid, account.AccountGuid)).Returns(true);
 
             var userController = new UserController(fakeAdapterRepo);
             var result = userController.RemoveMoneyAccountFromUser(_user.UserGuid, account.AccountGuid) as RedirectToActionResult;
 
-            A.CallTo(() => fakeAdapterRepo.RemoveMoneyAccountFromUser(A<Guid>.Ignored, A<Guid>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => fakeAdapterRepo.RemoveAccount(A<Guid>.Ignored, A<Guid>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
             Assert.That("GetUser", Is.EqualTo(result.ActionName));
         }
     }

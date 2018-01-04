@@ -1,12 +1,17 @@
 ﻿using System;
-using System.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
 
-// look at cookies for user GUID storage.
+#region expando
+//dynamic accoutsOverviewModel = new ExpandoObject();
+//accoutsOverviewModel.user = userDto;
+//accoutsOverviewModel.accountsIndex = postion;
+//@model dynamic
+#endregion
+// DeleteUser issue. Check error handling, should messages bubble up through the program. Possible two logins required on first login.
 namespace MoneyApp.Controllers
 {
     public class UIController : Controller
@@ -21,174 +26,179 @@ namespace MoneyApp.Controllers
             _client = new HttpClient();
             _userApiService = userApiService;
         }
-        public IActionResult LoginPage()
+
+        public IActionResult LoadLoginView()
         {
-            dynamic errorModel = new ExpandoObject();
-            errorModel.errorMessage = "";
-            return View("LoginView", errorModel);
+            ViewBag.IsLoggedIn = "false";
+            ViewBag.errorMessage = "";
+            return View("LoginView");
         }
 
-        public IActionResult RegisterUser(string username, string password)
+        public IActionResult LoadRegisterUserView()
         {
-            try
-            {
-                _userApiService.CreateUser(username, password);
-                var userGuid = _userApiService.GetUserGuid(username, password);
-                HttpContext.Session.SetString("userGuid", userGuid.ToString());
-                return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = 0 });
-            }
-            catch (Exception)
-            {
-                dynamic errorModel = new ExpandoObject();
-                errorModel.errorMessage = "";
-                return View("LoginView", errorModel);
-            }
-        }
-
-        public IActionResult RegisterUserPage()
-        {
+            ViewBag.IsLoggedIn = "false";
             return View("RegisterUserView");
         }
 
-        public IActionResult DeleteUser()
-        {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
-            try
-            {
-                _userApiService.DeleteUser(userGuid);
-                return RedirectToAction(nameof(LoginPage));
-            }
-            catch (Exception)
-            {
-                return RedirectToAction(nameof(LoginPage));
-            }
-        }
-
-        public IActionResult UserAccountsPageLogin(string username, string password)
+        public IActionResult LoadOverview()
         {
             try
             {
-                var userGuid = _userApiService.GetUserGuid(username, password);
-                HttpContext.Session.SetString("userGuid", userGuid.ToString());
-                return UserAccountsPage(0);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction(nameof(LoginPage));
-            }
-        }
-
-        public IActionResult UserAccountsPage(int postion)
-        {
-            try
-            {
-                Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
+                Guid userGuid = Guid.Parse(Read("userGuid"));
                 var userDto = _userApiService.GetUserDto(userGuid);
-                dynamic accoutsOverviewModel = new ExpandoObject();
-                accoutsOverviewModel.user = userDto;
-                accoutsOverviewModel.accountsIndex = postion;
-                return View("AccountsOverview", accoutsOverviewModel);
+                ViewBag.user = userDto;
+                ViewBag.accountsPosition = Read("accountsPosition");
+                ViewBag.IsLoggedIn = "true";
+                return View("Overview");
             }
             catch (Exception)
             {
-                dynamic errorModel = new ExpandoObject();
-                errorModel.errorMessage = "Failed to login.";
-                return View("LoginView", errorModel);
+                ViewBag.errorMessage = "Failed to login.";
+                return LoadLoginView();
             }
         }
 
-        public IActionResult UserAccountsIndex()
+        public IActionResult LoadAccountView(Guid accountGuid, int position)
         {
-            try
-            {
-                Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
-                var userDto = _userApiService.GetUserDto(userGuid);
-                int accountsPosition;
+            Guid userGuid = Guid.Parse(Read("userGuid"));
 
-                accountsPosition = Convert.ToInt32(GetAccountsPositon("accountsPosition")) + 10;
-                if (accountsPosition >= userDto.Accounts.Count)
-                    accountsPosition = 0;
-
-                SetAccountsPositon("accountsPosition", accountsPosition);
-                return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = accountsPosition });
-            }
-            catch (Exception)
-            {
-                dynamic errorModel = new ExpandoObject();
-                errorModel.errorMessage = "Failed to login.";
-                return View("LoginView", errorModel);
-            }
-        }
-
-        public IActionResult AccountPage(Guid accountGuid, int position)
-        {
-            //HttpContext.Session.SetString("userGuid", userGuid.ToString());
-
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
                 var account = _userApiService.LoadMoneyAccount(accountGuid);
-                dynamic accountModel = new ExpandoObject();
-                accountModel.account = account;
-                accountModel.position = position;
-                accountModel.user = userDto;
-                return View("AccountView", accountModel);
+                ViewBag.account = account;
+                ViewBag.user = userDto;
+                Set("accountPosition", 0.ToString());
+                ViewBag.accountPosition = Read("accountsPosition");
+                ViewBag.IsLoggedIn = "true";
+                return View("AccountView");
             }
             catch (Exception)
             {
-                return RedirectToAction(nameof(UserAccountsIndex), userGuid);
+                return RedirectToAction(nameof(PaginateOverview));
             }
         }
 
-        public IActionResult UserAccountIndex(Guid accountGuid)
+        public IActionResult CreateUser(string username, string password)
         {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
+            try
+            {
+                _userApiService.CreateUser(username, password);
+
+                var userGuid = _userApiService.GetUserGuid(username, password);
+                Set("userGuid", userGuid.ToString());
+                Set("accountsPosition", 0.ToString());
+                return RedirectToAction(nameof(LoadOverview));
+            }
+            catch (Exception)
+            {
+                return LoadLoginView();
+            }
+        }
+        
+        public IActionResult DeleteUser()
+        {
+            Guid userGuid = Guid.Parse(Read("userGuid"));
+            try
+            {
+                _userApiService.DeleteUser(userGuid);
+                return RedirectToAction(nameof(LoadLoginView));
+            }
+            catch (Exception)
+            {
+                return LoadLoginView();
+            }
+        }
+
+        public IActionResult VerifyLogin(string username, string password)
+        {
+            try
+            {
+                var userGuid = _userApiService.GetUserGuid(username, password);
+                Set("userGuid", userGuid.ToString());
+                Set("accountsPosition", 0.ToString());
+                return LoadOverview();
+            }
+            catch (Exception)
+            {
+                return LoadLoginView();
+            }
+        }
+        
+        public IActionResult PaginateOverview()
+        {
+            try
+            {
+                Guid userGuid = Guid.Parse(Read("userGuid"));
+
+                var userDto = _userApiService.GetUserDto(userGuid);
+                int accountsPosition;
+
+                accountsPosition = Convert.ToInt32(Read("accountsPosition")) + 10;
+                if (accountsPosition >= userDto.Accounts.Count)
+                    accountsPosition = 0;
+
+                Set("accountsPosition", accountsPosition.ToString());
+                return RedirectToAction(nameof(LoadOverview));
+            }
+            catch (Exception)
+            {
+                ViewBag.errorMessage = "Failed to login.";
+                return LoadLoginView();
+            }
+        }
+
+        public IActionResult CreateAccount(string accountName)
+                {
+                    Guid userGuid = Guid.Parse(Read("userGuid"));
+                    var userDto = _userApiService.GetUserDto(userGuid);
+                    try
+                    {
+                        _userApiService.CreateMoneyAccountForUser(accountName, userGuid);
+                    }
+                    catch (Exception) { }
+
+                    Set("accountsPosition", 0.ToString());
+                    return RedirectToAction(nameof(LoadOverview));
+                }
+
+        public IActionResult DeleteAccount(Guid accountGuid)
+        {
+            Guid userGuid = Guid.Parse(Read("userGuid"));
+            var userDto = _userApiService.GetUserDto(userGuid);
+            try
+            {
+                _userApiService.DeleteAccount(userDto.UserGuid, accountGuid);
+            }
+            catch (Exception) { }
+
+            Set("accountsPosition", 0.ToString());
+            return RedirectToAction(nameof(LoadOverview));
+        }
+
+        public IActionResult PaginateAccount(Guid accountGuid)
+        {
+            Guid userGuid = Guid.Parse(Read("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
                 int accountPosition;
-
-                accountPosition = Convert.ToInt32(GetAccountsPositon("accountPosition")) + 10;
+                accountPosition = Convert.ToInt32(Read("accountPosition")) + 10;
                 if (accountPosition >= userDto.Accounts.Count)
                     accountPosition = 0;
 
-                SetAccountsPositon("accountPosition", accountPosition);
-                return RedirectToAction(nameof(AccountPage), new { accountGuid, position = accountPosition, userGuid });
+                Set("accountPosition", accountPosition.ToString());
+                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
             }
             catch (Exception)
             {
-                return View("LoginView");
+                return LoadLoginView();
             }
         }
 
-        public IActionResult DeleteMoneyAccountFromUser(Guid accountGuid)
+        public IActionResult CreateTransaction(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
         {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
-            try
-            {
-                _userApiService.DeleteMoneyAccountFromUser(userDto.UserGuid, accountGuid);
-            }
-            catch (Exception) { }
-            return RedirectToAction(nameof(UserAccountsPage), new { postion = Convert.ToInt32(GetAccountsPositon("accountPosition")), userGuid });
-        }
-
-        public IActionResult CreateMoneyAccountForUser(string accountName)
-        {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
-            try
-            {
-                _userApiService.CreateMoneyAccountForUser(accountName, userGuid);
-            }
-            catch (Exception) { }
-            return RedirectToAction(nameof(UserAccountsPage), new { userGuid, postion = 0 });
-        }
-
-        public IActionResult CreateMoneySpentItem(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
-        {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
+            Guid userGuid = Guid.Parse(Read("userGuid"));
             try
             {
                 var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = dateTime };
@@ -197,12 +207,13 @@ namespace MoneyApp.Controllers
             catch (Exception)
             {
             }
-            return RedirectToAction(nameof(AccountPage), new { accountGuid, userGuid, position = 0 });
+            Set("accountPosition", 0.ToString());
+            return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
         }
 
-        public IActionResult DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
+        public IActionResult DeleteTransaction(Guid accountGuid, Guid moneyItemGuid)
         {
-            Guid userGuid = Guid.Parse(HttpContext.Session.GetString("userGuid"));
+            Guid userGuid = Guid.Parse(Read("userGuid"));
             try
             {
                 _userApiService.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
@@ -210,17 +221,21 @@ namespace MoneyApp.Controllers
             catch (Exception)
             {
             }
-            return RedirectToAction(nameof(AccountPage), new { accountGuid, position = 0, userGuid });
+            Set("accountPosition", 0.ToString());
+            return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
         }
 
-        public string GetAccountsPositon(string key)
+        public void Set(string key, string value)
         {
-            return HttpContext.Session.GetString(key);
+            CookieOptions option = new CookieOptions();
+            option.Expires = DateTime.Now.AddMinutes(1);
+            Response.Cookies.Append(key, value, option);
         }
 
-        public void SetAccountsPositon(string key, int position)
+        public string Read(string key)
         {
-            HttpContext.Session.SetString(key, position.ToString());
+            var cookieValueFromReq = Request.Cookies[key];
+            return cookieValueFromReq;
         }
     }
 }
