@@ -44,7 +44,10 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                Guid userGuid = Guid.Parse(Read("userGuid"));
+                Guid userGuid;
+                Guid.TryParse(Read("userGuid"), out userGuid);
+                if (userGuidLogin != Guid.Empty)
+                   userGuid = userGuidLogin; 
                 var userDto = _userApiService.GetUserDto(userGuid);
                 ViewBag.errorMessage = errorMessage;
                 ViewBag.user = userDto;
@@ -76,7 +79,6 @@ namespace MoneyApp.Controllers
             catch (Exception e)
             {
                 return LoadLoginView(MessageHandler(e, "Unknown Error: LoadAccountView"));
-                //return PaginateOverview();
             }
         }
 
@@ -110,11 +112,13 @@ namespace MoneyApp.Controllers
             }
         }
 
+        private Guid userGuidLogin;
         public IActionResult VerifyLogin(string username, string password)
         {
             try
             {
                 var userGuid = _userApiService.GetUserGuid(username, password);
+                userGuidLogin = userGuid;
                 Set("userGuid", userGuid.ToString());
                 Set("accountsPosition", 0.ToString());
                 return LoadOverview(string.Empty);
@@ -233,7 +237,7 @@ namespace MoneyApp.Controllers
         public void Set(string key, string value)
         {
             CookieOptions option = new CookieOptions();
-            option.Expires = DateTime.Now.AddMinutes(1);
+            option.Expires = DateTime.Now.AddMinutes(10);
             Response.Cookies.Append(key, value, option);
         }
 
