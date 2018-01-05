@@ -11,7 +11,7 @@ using MoneyApp.Interfaces;
 //accoutsOverviewModel.accountsIndex = postion;
 //@model dynamic
 #endregion
-// DeleteUser issue. Check error handling, should messages bubble up through the program. Possible two logins required on first login.
+// DeleteUser issue. Two logins required on first login. UserGuid error when cookie expires, Guid.Parse(Read("userGuid")), not in try/except;.
 namespace MoneyApp.Controllers
 {
     public class UIController : Controller
@@ -27,10 +27,10 @@ namespace MoneyApp.Controllers
             _userApiService = userApiService;
         }
 
-        public IActionResult LoadLoginView()
+        public IActionResult LoadLoginView(string errorMessage)
         {
             ViewBag.IsLoggedIn = "false";
-            ViewBag.errorMessage = "";
+            ViewBag.errorMessage = errorMessage;
             return View("LoginView");
         }
 
@@ -40,32 +40,32 @@ namespace MoneyApp.Controllers
             return View("RegisterUserView");
         }
 
-        public IActionResult LoadOverview()
+        public IActionResult LoadOverview(string errorMessage)
         {
             try
             {
                 Guid userGuid = Guid.Parse(Read("userGuid"));
                 var userDto = _userApiService.GetUserDto(userGuid);
+                ViewBag.errorMessage = errorMessage;
                 ViewBag.user = userDto;
                 ViewBag.accountsPosition = Read("accountsPosition");
                 ViewBag.IsLoggedIn = "true";
                 return View("Overview");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                ViewBag.errorMessage = "Failed to login.";
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, "Unknown Error: LoadOverview"));
             }
         }
 
-        public IActionResult LoadAccountView(Guid accountGuid, int position)
+        public IActionResult LoadAccountView(Guid accountGuid, string errorMessage)
         {
             Guid userGuid = Guid.Parse(Read("userGuid"));
-
             var userDto = _userApiService.GetUserDto(userGuid);
             try
             {
                 var account = _userApiService.LoadMoneyAccount(accountGuid);
+                ViewBag.errorMessage = errorMessage;
                 ViewBag.account = account;
                 ViewBag.user = userDto;
                 Set("accountPosition", 0.ToString());
@@ -73,9 +73,10 @@ namespace MoneyApp.Controllers
                 ViewBag.IsLoggedIn = "true";
                 return View("AccountView");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return RedirectToAction(nameof(PaginateOverview));
+                return LoadLoginView(MessageHandler(e, "Unknown Error: LoadAccountView"));
+                //return PaginateOverview();
             }
         }
 
@@ -84,18 +85,17 @@ namespace MoneyApp.Controllers
             try
             {
                 _userApiService.CreateUser(username, password);
-
                 var userGuid = _userApiService.GetUserGuid(username, password);
                 Set("userGuid", userGuid.ToString());
                 Set("accountsPosition", 0.ToString());
                 return RedirectToAction(nameof(LoadOverview));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, "Unknown Error"));
             }
         }
-        
+
         public IActionResult DeleteUser()
         {
             Guid userGuid = Guid.Parse(Read("userGuid"));
@@ -104,9 +104,9 @@ namespace MoneyApp.Controllers
                 _userApiService.DeleteUser(userGuid);
                 return RedirectToAction(nameof(LoadLoginView));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, "Unknown Error: DeleteUser"));
             }
         }
 
@@ -117,14 +117,14 @@ namespace MoneyApp.Controllers
                 var userGuid = _userApiService.GetUserGuid(username, password);
                 Set("userGuid", userGuid.ToString());
                 Set("accountsPosition", 0.ToString());
-                return LoadOverview();
+                return LoadOverview(string.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, "Unknown Error: VerifyLogin"));
             }
         }
-        
+
         public IActionResult PaginateOverview()
         {
             try
@@ -139,41 +139,44 @@ namespace MoneyApp.Controllers
                     accountsPosition = 0;
 
                 Set("accountsPosition", accountsPosition.ToString());
-                return RedirectToAction(nameof(LoadOverview));
+                return LoadOverview(string.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                ViewBag.errorMessage = "Failed to login.";
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, "Unknown Error: PaginateOverview"));
             }
         }
 
         public IActionResult CreateAccount(string accountName)
-                {
-                    Guid userGuid = Guid.Parse(Read("userGuid"));
-                    var userDto = _userApiService.GetUserDto(userGuid);
-                    try
-                    {
-                        _userApiService.CreateMoneyAccountForUser(accountName, userGuid);
-                    }
-                    catch (Exception) { }
-
-                    Set("accountsPosition", 0.ToString());
-                    return RedirectToAction(nameof(LoadOverview));
-                }
+        {
+            Guid userGuid = Guid.Parse(Read("userGuid"));
+            var userDto = _userApiService.GetUserDto(userGuid);
+            Set("accountsPosition", 0.ToString());
+            try
+            {
+                _userApiService.CreateMoneyAccountForUser(accountName, userGuid);
+                return LoadOverview(string.Empty);
+            }
+            catch (Exception e)
+            {
+                return LoadOverview(MessageHandler(e, "Unknown Error: CreateAccount"));
+            }
+        }
 
         public IActionResult DeleteAccount(Guid accountGuid)
         {
             Guid userGuid = Guid.Parse(Read("userGuid"));
             var userDto = _userApiService.GetUserDto(userGuid);
+            Set("accountsPosition", 0.ToString());
             try
             {
                 _userApiService.DeleteAccount(userDto.UserGuid, accountGuid);
+                return LoadOverview(string.Empty);
             }
-            catch (Exception) { }
-
-            Set("accountsPosition", 0.ToString());
-            return RedirectToAction(nameof(LoadOverview));
+            catch (Exception e)
+            {
+                return LoadOverview(MessageHandler(e, "Unknown Error: DeleteAccount"));
+            }
         }
 
         public IActionResult PaginateAccount(Guid accountGuid)
@@ -186,43 +189,45 @@ namespace MoneyApp.Controllers
                 accountPosition = Convert.ToInt32(Read("accountPosition")) + 10;
                 if (accountPosition >= userDto.Accounts.Count)
                     accountPosition = 0;
-
                 Set("accountPosition", accountPosition.ToString());
-                return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
+                return LoadAccountView(accountGuid, string.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return LoadLoginView();
+                return LoadLoginView(MessageHandler(e, $"Unknown Error: {nameof(PaginateAccount)}"));
             }
         }
 
         public IActionResult CreateTransaction(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
         {
+            // what to do if read fails
             Guid userGuid = Guid.Parse(Read("userGuid"));
+            Set("accountPosition", 0.ToString());
             try
             {
                 var moneySpentItem = new MoneySpentItemDto() { ItemCost = itemCost, ItemName = itemName, DateTime = dateTime };
                 _userApiService.CreateMoneySpentItem(accountGuid, moneySpentItem);
+                return LoadAccountView(accountGuid, String.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                return LoadAccountView(accountGuid, e.Message);
             }
-            Set("accountPosition", 0.ToString());
-            return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
         }
 
         public IActionResult DeleteTransaction(Guid accountGuid, Guid moneyItemGuid)
         {
             Guid userGuid = Guid.Parse(Read("userGuid"));
+            Set("accountPosition", 0.ToString());
             try
             {
                 _userApiService.DeleteMoneySpentItem(accountGuid, moneyItemGuid);
+                return LoadAccountView(accountGuid, String.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                return LoadAccountView(accountGuid, e.Message);
             }
-            Set("accountPosition", 0.ToString());
-            return RedirectToAction(nameof(LoadAccountView), new { accountGuid });
         }
 
         public void Set(string key, string value)
@@ -234,8 +239,23 @@ namespace MoneyApp.Controllers
 
         public string Read(string key)
         {
-            var cookieValueFromReq = Request.Cookies[key];
-            return cookieValueFromReq;
+            try
+            {
+                var cookieValueFromReq = Request.Cookies[key];
+                return cookieValueFromReq;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Session Timeout");
+            }
+        }
+
+        public string MessageHandler(Exception e, string customMessage)
+        {
+            var message = customMessage;
+            if (e.Message != string.Empty)
+                message = e.Message;
+            return message;
         }
     }
 }

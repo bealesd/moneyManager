@@ -24,7 +24,7 @@ namespace MoneyApp.Services
             string path = $"{_apiPath}/user/{username}/{password}";
             var httpResponse = _client.PostAsync(path, null).Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Create user failure.");
             return httpResponse.Content.ReadAsAsync<User>().Result;
         }
 
@@ -40,10 +40,10 @@ namespace MoneyApp.Services
         public void DeleteUser(Guid userGuid)
         {
             if(userGuid == Guid.Empty)
-                throw new Exception();
+                throw new Exception("Delete user failure. Empty userGuid.");
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/deleteUser/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Delete user failure.");
         }
 
 
@@ -51,7 +51,7 @@ namespace MoneyApp.Services
         {
             var httpResponse = _client.GetAsync($"{_apiPath}/user/{userGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Find user failure, invalid userGuid.");
 
             return httpResponse.Content.ReadAsAsync<User>().Result;
         }
@@ -60,7 +60,7 @@ namespace MoneyApp.Services
         {
             var httpResponse = _client.GetAsync($"{_apiPath}/user/{username}/{password}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Find user failure, invalid credentials.");
 
             return httpResponse.Content.ReadAsAsync<Guid>().Result;
         }
@@ -70,25 +70,25 @@ namespace MoneyApp.Services
         {
             var httpResponse = _client.GetAsync($"{_apiPath}/user/account/{accountGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Find account failure, invalid accountGuid.");
             return httpResponse.Content.ReadAsAsync<Account>().Result;
         }
 
         public void DeleteAccount(Guid userGuid, Guid accountGuid)
         {
             if (accountGuid == Guid.Empty)
-                throw new Exception("no accountGuid");
+                throw new Exception("Delete accountfailure. Empty accountGuid.");
             var path = $"{_apiPath}/user/{userGuid}/{accountGuid}";
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/{userGuid}/{accountGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Delete accountfailure.");
         }
 
         public void CreateMoneyAccountForUser(string accountName, Guid userGuid)
         {
             var httpResponse = _client.PostAsync($"{_apiPath}/user/account/{userGuid}/{accountName}", null).Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Create account failure.");
         }
 
         public void CreateMoneySpentItem(Guid accountGuid, MoneySpentItemDto moneySpentItem)
@@ -100,14 +100,14 @@ namespace MoneyApp.Services
 
             var httpResponse = _client.PostAsync($"{_apiPath}/user/account/{accountGuid}", byteContent).Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Create transaction failure.");
         }
 
         public void DeleteMoneySpentItem(Guid accountGuid, Guid moneyItemGuid)
         {
             var httpResponse = _client.DeleteAsync($"{_apiPath}/user/account/{accountGuid}/{moneyItemGuid}").Result;
             if (!httpResponse.IsSuccessStatusCode)
-                throw new Exception();
+                throw new Exception("Delete transaction failure.");
         }
     }
 }
