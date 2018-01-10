@@ -7,15 +7,14 @@ namespace MoneyApp.Interfaces
 {
     public interface IAdapterRepo
     {
-        void CreateMoneyAccountForUser(Guid userGuid, string accountName);
-        void RemoveAccount(Guid userGuid, Guid accountGuid);
+        void CreateMoneyAccountForUser(string username, string accountName);
+        void RemoveAccount(string username, Guid accountGuid);
         IAccount GetMoneyAccount(Guid accountGuid);
         void CreateTransaction(Guid accountGuid, string itemName, float itemCost, DateTime dateTime);
         void DeleteTransaction(Guid accountGuid, Guid moneyItemGuid);
         IEnumerable<IUser> GetAllUsers();
-        IUser GetUser(Guid userGuid);
-        //IUser UserLogin(string username, string password);
-        void CreateUser(string username, Guid userGuid);
-        void DeleteUser(Guid userGuid);
+        IUser GetUser(string username);
+        void CreateUser(string username);
+        void DeleteUser(string username);
     }
 }

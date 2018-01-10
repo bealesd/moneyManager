@@ -33,14 +33,10 @@ namespace MoneyApp.Repos
                 _users = loadedUsers.ToList();
         }
 
-        public void CreateUser(string username, Guid userGuid)
+        public void CreateUser(string username)
         {
-            if (_users.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
-                throw new Exception();
-
             var newUser = new User()
             {
-                UserGuid = userGuid,
                 Username = username,
                 AccountGuid = new List<Guid>()
             };
@@ -48,9 +44,9 @@ namespace MoneyApp.Repos
             Save();
         }
 
-        public void AddAccountToUser(Guid userGuid, Guid accountGuid)
+        public void AddAccountToUser(string username, Guid accountGuid)
         {
-            var user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
+            var user = _users.FirstOrDefault(u => u.Username == username);
             if (user == null)
                 throw new Exception();
             user.AccountGuid.Add(accountGuid);
@@ -62,21 +58,21 @@ namespace MoneyApp.Repos
             return _users;
         }
 
-        public User GetUser(Guid userGuid)
+        public User GetUser(string username)
         {
-            User user = _users.FirstOrDefault(u => u.UserGuid == userGuid);
+            User user = _users.FirstOrDefault(u => u.Username == username);
             return Equals(user, null) ? throw new Exception() : user;
         }
 
-        public void DeleteUser(Guid userGuid)
+        public void DeleteUser(string username)
         {
-            _users.Remove(this.GetUser(userGuid));
+            _users.Remove(this.GetUser(username));
             Save();
         }
 
-        public void RemoveAccount(Guid userGuid, Guid accountGuid)
+        public void RemoveAccount(string username, Guid accountGuid)
         {
-            this.GetUser(userGuid).AccountGuid.Remove(accountGuid);
+            this.GetUser(username).AccountGuid.Remove(accountGuid);
             Save();
         }
     }

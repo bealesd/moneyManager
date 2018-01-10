@@ -1,1 +1,1 @@
-[{"UserGuid":"1556860b-0812-4bfe-9826-b0495ea6ee01","Username":"Johnocooler","AccountGuid":[]}]
+[{"Username":"JOHNOCOOL","AccountGuid":["719bb4f6-ec7d-4c38-99ba-b2a3f3b21d47"]}]

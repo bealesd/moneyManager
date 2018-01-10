@@ -11,7 +11,6 @@ using MoneyApp.Interfaces;
 //accoutsOverviewModel.accountsIndex = postion;
 //@model dynamic
 #endregion
-// DeleteUser issue. Two logins required on first login. UserGuid error when cookie expires, Guid.Parse(Read("userGuid")), not in try/except;.
 namespace MoneyApp.Controllers
 {
     public class UIController : Controller
@@ -29,6 +28,7 @@ namespace MoneyApp.Controllers
 
         public IActionResult LoadLoginView(string errorMessage)
         {
+            _userApiService.Logout();
             ViewBag.IsLoggedIn = "false";
             ViewBag.errorMessage = errorMessage;
             return View("LoginView");
@@ -44,13 +44,9 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                Guid userGuid;
-                Guid.TryParse(Read("userGuid"), out userGuid);
-                if (userGuidLogin != Guid.Empty)
-                   userGuid = userGuidLogin; 
-                var userDto = _userApiService.GetUserDto(userGuid);
+                var user = _userApiService.GetUserDto();
                 ViewBag.errorMessage = errorMessage;
-                ViewBag.user = userDto;
+                ViewBag.user = user;
                 ViewBag.accountsPosition = Read("accountsPosition");
                 ViewBag.IsLoggedIn = "true";
                 return View("Overview");
@@ -63,8 +59,8 @@ namespace MoneyApp.Controllers
 
         public IActionResult LoadAccountView(Guid accountGuid, string errorMessage)
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
+            var userDto = _userApiService.GetUserDto();
+
             try
             {
                 var account = _userApiService.LoadMoneyAccount(accountGuid);
@@ -86,11 +82,9 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                _userApiService.CreateUser(username, password);
-                var userGuid = _userApiService.GetUserGuid(username, password);
-                Set("userGuid", userGuid.ToString());
+                _userApiService.Register(username, password);
                 Set("accountsPosition", 0.ToString());
-                return RedirectToAction(nameof(LoadOverview));
+                return LoadOverview("");
             }
             catch (Exception e)
             {
@@ -100,11 +94,10 @@ namespace MoneyApp.Controllers
 
         public IActionResult DeleteUser()
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
             try
             {
-                _userApiService.DeleteUser(userGuid);
-                return RedirectToAction(nameof(LoadLoginView));
+                _userApiService.DeleteUser();
+                return LoadLoginView("");
             }
             catch (Exception e)
             {
@@ -112,16 +105,13 @@ namespace MoneyApp.Controllers
             }
         }
 
-        private Guid userGuidLogin;
-        public IActionResult VerifyLogin(string username, string password)
+        public IActionResult Login(string username, string password)
         {
             try
             {
-                var userGuid = _userApiService.GetUserGuid(username, password);
-                userGuidLogin = userGuid;
-                Set("userGuid", userGuid.ToString());
                 Set("accountsPosition", 0.ToString());
-                return LoadOverview(string.Empty);
+                _userApiService.Login(username, password);
+                return LoadOverview("");
             }
             catch (Exception e)
             {
@@ -133,9 +123,7 @@ namespace MoneyApp.Controllers
         {
             try
             {
-                Guid userGuid = Guid.Parse(Read("userGuid"));
-
-                var userDto = _userApiService.GetUserDto(userGuid);
+                var userDto = _userApiService.GetUserDto();
                 int accountsPosition;
 
                 accountsPosition = Convert.ToInt32(Read("accountsPosition")) + 10;
@@ -153,12 +141,10 @@ namespace MoneyApp.Controllers
 
         public IActionResult CreateAccount(string accountName)
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
             Set("accountsPosition", 0.ToString());
             try
             {
-                _userApiService.CreateMoneyAccountForUser(accountName, userGuid);
+                _userApiService.CreateMoneyAccountForUser(accountName);
                 return LoadOverview(string.Empty);
             }
             catch (Exception e)
@@ -169,12 +155,10 @@ namespace MoneyApp.Controllers
 
         public IActionResult DeleteAccount(Guid accountGuid)
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
             Set("accountsPosition", 0.ToString());
             try
             {
-                _userApiService.DeleteAccount(userDto.UserGuid, accountGuid);
+                _userApiService.DeleteAccount(accountGuid);
                 return LoadOverview(string.Empty);
             }
             catch (Exception e)
@@ -185,8 +169,7 @@ namespace MoneyApp.Controllers
 
         public IActionResult PaginateAccount(Guid accountGuid)
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
-            var userDto = _userApiService.GetUserDto(userGuid);
+            var userDto = _userApiService.GetUserDto();
             try
             {
                 int accountPosition;
@@ -204,8 +187,6 @@ namespace MoneyApp.Controllers
 
         public IActionResult CreateTransaction(Guid accountGuid, float itemCost, string itemName, DateTime dateTime)
         {
-            // what to do if read fails
-            Guid userGuid = Guid.Parse(Read("userGuid"));
             Set("accountPosition", 0.ToString());
             try
             {
@@ -221,7 +202,6 @@ namespace MoneyApp.Controllers
 
         public IActionResult DeleteTransaction(Guid accountGuid, Guid moneyItemGuid)
         {
-            Guid userGuid = Guid.Parse(Read("userGuid"));
             Set("accountPosition", 0.ToString());
             try
             {

@@ -1,4 +1,6 @@
-﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@using Microsoft.AspNetCore.Identity
+@using MoneyApp.Authentication
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     var isLoggedIn = ViewBag.IsLoggedIn;
@@ -78,7 +80,6 @@
         
     </style>
 
-
 <br />
     
 
@@ -96,6 +97,7 @@
             <a class="navbar-brand" asp-controller="UI" asp-action="LoadRegisterUserView">Register</a>
         }
     </div>
+
     @RenderBody()
 </div>
 

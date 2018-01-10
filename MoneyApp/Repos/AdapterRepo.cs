@@ -18,30 +18,9 @@ namespace MoneyApp.Repos
             _accountRepo = accountRepo;
         }
 
-        public IUser GetUser(Guid userGuid)
+        public IUser GetUser(string username)
         {
-            if (userGuid == Guid.Empty)
-            {
-                throw new Exception();
-            }
-            HarmonizeUserMoneyAccounts(userGuid);
-            return _userRepo.GetUser(userGuid);
-        }
-
-        private void HarmonizeUserMoneyAccounts(Guid userGuid)
-        {
-            var user = _userRepo.GetUser(userGuid);
-            foreach (var accountGuid in user.AccountGuid)
-            {
-                try
-                {
-                    _accountRepo.GetMoneyAccount(accountGuid);
-                }
-                catch (Exception)
-                {
-                    this.RemoveAccount(userGuid, accountGuid);
-                }
-            }
+            return _userRepo.GetUser(username);
         }
 
         public IEnumerable<IUser> GetAllUsers()
@@ -49,17 +28,15 @@ namespace MoneyApp.Repos
             return _userRepo.GetAllUsers();
         }
 
-        public void CreateUser(string username, Guid userGuid)
+        public void CreateUser(string username)
         {
-            _userRepo.CreateUser(username, userGuid);
+            _userRepo.CreateUser(username);
         }
 
-        public void DeleteUser(Guid userGuid)
+        public void DeleteUser(string username)
         {
-            if (_userRepo.GetUser(userGuid).AccountGuid.Count > 0)
-                throw new Exception();
-
-            _userRepo.DeleteUser(userGuid);
+            this.GetUser(username).AccountGuid.ForEach(a => this.DeleteAccount(a));
+            _userRepo.DeleteUser(username);
         }
 
         public IAccount GetMoneyAccount(Guid accountGuid)
@@ -72,13 +49,9 @@ namespace MoneyApp.Repos
             return _accountRepo.CreateMoneyAccount(accountName);
         }
 
-        public void CreateMoneyAccountForUser(Guid userGuid, string accountName)
+        public void CreateMoneyAccountForUser(string username, string accountName)
         {
-            User user = _userRepo.GetUser(userGuid);
-            if (user.AccountGuid.Any(guid => _accountRepo.GetMoneyAccount(guid).AccountName == accountName))
-                throw new Exception();
-
-            _userRepo.AddAccountToUser(userGuid, CreateMoneyAccount(accountName));
+            _userRepo.AddAccountToUser(username, CreateMoneyAccount(accountName));
         }
 
         private void DeleteAccount(Guid accountGuid)
@@ -86,23 +59,15 @@ namespace MoneyApp.Repos
             _accountRepo.DeleteMoneyAccount(accountGuid);
         }
 
-        public void RemoveAccount(Guid userGuid, Guid accountGuid)
+        public void RemoveAccount(string username, Guid accountGuid)
         {
-            _userRepo.RemoveAccount(userGuid, accountGuid);
-            if (!this.IsLinkedAccount(accountGuid))
-                this.DeleteAccount(accountGuid);
-        }
-
-        private bool IsLinkedAccount(Guid accountGuid)
-        {
-            var users = this.GetAllUsers();
-            return users.Count(u => Equals(u.AccountGuid, accountGuid)) > 1;
+            _userRepo.RemoveAccount(username, accountGuid);
         }
 
         public void CreateTransaction(Guid accountGuid, string itemName, float itemCost, DateTime dateTime)
         {
             if (!itemCost.ValidFloat())
-                throw new Exception();
+                throw new Exception("Invalid Number.");
 
             _accountRepo.CreateMoneySpentItem(accountGuid, itemName, itemCost, dateTime);
         }

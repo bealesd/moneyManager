@@ -1,15 +1,16 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MoneyApp.Authentication;
 using MoneyApp.Helper;
 using MoneyApp.IO;
 using MoneyApp.Repos;
 using MoneyApp.Interfaces;
 using MoneyApp.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Identity;
 
 namespace MoneyApp
 {
@@ -22,13 +23,19 @@ namespace MoneyApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-            //.AddSessionStateTempDataProvider();
+            //opt.UseInMemoryDatabase(Guid.NewGuid().ToString())
+            services.AddDbContext<ApplicationDbContext>(opt =>
+                opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                );
 
-            services.AddSession();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+
+            services.AddMvc();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
 
@@ -38,8 +45,6 @@ namespace MoneyApp
                                                         new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt"))
                                                     ));
 
-            services.AddSingleton<IUserLogin>(new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt")));
-            //services.AddSingleton<ISessionHandler>();
             services.AddSingleton<IUserApiService>(new UserApiService());
         }
 
@@ -52,7 +57,7 @@ namespace MoneyApp
             }
 
             app.UseStaticFiles();
-            app.UseSession();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
