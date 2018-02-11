@@ -1,0 +1,52 @@
+﻿@using MoneyApp.Dto
+@using MoneyApp.Models
+
+@{
+    UserDto userDto = ViewBag.user;
+// I want a single row to add transactions and assign to an account. Use select option.
+}
+
+
+@*<div class="row">
+    <div class="col-xs-10 col-xs-offset-1">
+        <h2>@userDto.Username</h2>
+        @foreach (var account in userDto.Accounts)
+        {
+            <p>@account.AccountName</p>
+            @foreach (var moneyItem in account.MoneySpentItems)
+             {
+                 <p>@moneyItem.ItemName</p>
+
+             }
+        }
+
+    </div>
+</div>*@
+<div class="row">
+    <div class="col-xs-12">
+        <input list="accounts">
+        <datalist id="accounts">
+            @foreach (var account in userDto.Accounts)
+            {
+                <option value="@account.AccountName"></option>
+            }
+        </datalist>
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-xs-offset-1 col-xs-4 insertMoneyItem">
+        <h4>Expense</h4>
+        <form asp-action="CreateTransaction" , asp-route-accountGuid="" asp-route-itemName=itemName asp-route-itemCost=itemCost asp-route-dateTime=dateTime>
+            
+
+            <input class="input" type="text" placeholder="FoodShop" name="itemName" /><br /><br />
+            <input class="input" type="text" placeholder="10.50" name="itemCost" /><br /><br />
+            <input class="input" type="datetime-local" name="dateTime">
+            <button class="btn btn-danger pull-right">Add</button>
+        </form>
+    </div>
+
+</div>*@
+
+    <script>
+    </script>

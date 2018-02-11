@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using MoneyApp.Dto;
+using MoneyApp.Helper;
 using MoneyApp.Interfaces;
 
 namespace MoneyApp.Controllers
@@ -15,6 +16,14 @@ namespace MoneyApp.Controllers
         {
             _adapterRepo = adapterRepo;
             _userLogin = userLogin;
+        }
+
+        [HttpGet("postman")]
+        public IActionResult GetPostman()
+        {
+
+            var a = new PostmanRunnerRevenge();
+            return new ObjectResult(a.TestsPass());
         }
 
         //api/user

@@ -5,12 +5,6 @@ using Microsoft.AspNetCore.Http;
 using MoneyApp.Dto;
 using MoneyApp.Interfaces;
 
-#region expando
-//dynamic accoutsOverviewModel = new ExpandoObject();
-//accoutsOverviewModel.user = userDto;
-//accoutsOverviewModel.accountsIndex = postion;
-//@model dynamic
-#endregion
 // DeleteUser issue. Two logins required on first login. UserGuid error when cookie expires, Guid.Parse(Read("userGuid")), not in try/except;.
 namespace MoneyApp.Controllers
 {
@@ -53,7 +47,27 @@ namespace MoneyApp.Controllers
                 ViewBag.user = userDto;
                 ViewBag.accountsPosition = Read("accountsPosition");
                 ViewBag.IsLoggedIn = "true";
-                return View("Overview");
+                return View("ManageAccountsView");
+            }
+            catch (Exception e)
+            {
+                return LoadLoginView(MessageHandler(e, "Unknown Error: LoadOverview"));
+            }
+        }
+
+        public IActionResult LoadTransactionView(string errorMessage)
+        {
+            try
+            {
+                Guid userGuid;
+                Guid.TryParse(Read("userGuid"), out userGuid);
+                if (userGuidLogin != Guid.Empty)
+                    userGuid = userGuidLogin;
+                var userDto = _userApiService.GetUserDto(userGuid);
+                ViewBag.errorMessage = errorMessage;
+                ViewBag.user = userDto;
+                ViewBag.IsLoggedIn = "true";
+                return View("TransactionsView");
             }
             catch (Exception e)
             {
@@ -74,7 +88,7 @@ namespace MoneyApp.Controllers
                 Set("accountPosition", 0.ToString());
                 ViewBag.accountPosition = Read("accountsPosition");
                 ViewBag.IsLoggedIn = "true";
-                return View("AccountView");
+                return View("ManageAccountView");
             }
             catch (Exception e)
             {

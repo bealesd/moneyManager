@@ -22,28 +22,35 @@ namespace MoneyApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var testMode = Configuration.GetSection("TestMode").Get<bool>(); ;
+
             services.AddMvc();
-            //.AddSessionStateTempDataProvider();
 
             services.AddSession();
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "User Api", Version = "v1" }); });
 
+            IFilePaths filePaths;
+            if (testMode)
+            {
+                filePaths = new TestFilePaths();
+                filePaths.WipeFiles();
+            }
+                
+            else
+                filePaths = new StandardFilePaths();
+
             services.AddSingleton<IAdapterRepo>(new AdapterRepo
                                                     (
-                                                        new UserRepo(new JsonReaderWriter(), new PathHelper().TempPath("users.txt")),
-                                                        new AccountRepo(new JsonReaderWriter(), new PathHelper().TempPath("account.txt"))
+                                                        new UserRepo(new JsonReaderWriter(), filePaths.UserPath()),
+                                                        new AccountRepo(new JsonReaderWriter(), filePaths.AccountPath())
                                                     ));
-
-            services.AddSingleton<IUserLogin>(new UserLoginRepo(new JsonReaderWriter(), new PathHelper().TempPath("userCredentials.txt")));
-            //services.AddSingleton<ISessionHandler>();
+            services.AddSingleton<IUserLogin>(new UserLoginRepo(new JsonReaderWriter(), filePaths.CredentialsPath()));
             services.AddSingleton<IUserApiService>(new UserApiService());
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -51,15 +58,16 @@ namespace MoneyApp
                 app.UseDeveloperExceptionPage();
             }
 
+
             app.UseStaticFiles();
             app.UseSession();
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action}",
-                    defaults: new { controller = "UI", action = "LoadLoginView" });
+                //routes.MapRoute(
+                //    name: "default",
+                //    template: "{controller}/{action}",
+                //    defaults: new { controller = "UI", action = "LoadLoginView" });
             });
 
             app.UseSwagger();

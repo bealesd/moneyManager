@@ -7,8 +7,9 @@ namespace MoneyApp.Helper
     {
         public static bool ValidUsername(this string username)
         {
-            Regex regex = new Regex(@"^[a-zA-Z0-9_-]{7,15}$");
-            return regex.IsMatch(username);
+            //Regex regex = new Regex(@"^[a-zA-Z0-9_-]{7,15}$");
+            //return regex.IsMatch(username);
+            return true;
         }
 
         public static bool ValidFloat(this float amount)

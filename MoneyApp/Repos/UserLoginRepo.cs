@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using MoneyApp.Helper;
 using MoneyApp.Interfaces;
 using MoneyApp.IO;
 using MoneyApp.Models;
@@ -34,6 +35,9 @@ namespace MoneyApp.Repos
         }
         public void CreateUser(string username, string password)
         {
+            if (_userCredentials.Exists(u => String.Equals(u.Username, username, StringComparison.InvariantCultureIgnoreCase) || !username.ValidUsername()))
+                throw new Exception("Username taken.");
+
             var userGuid = Guid.NewGuid();
 
             //create the salt

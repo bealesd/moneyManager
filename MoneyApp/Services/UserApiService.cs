@@ -31,7 +31,7 @@ namespace MoneyApp.Services
         public UserDto GetUserDto(Guid userGuid)
         {
             var user = GetUser(userGuid);
-            var userDto = new UserDto() { Username = user.Username, UserGuid = user.UserGuid, Accounts = new List<Account>() };
+            var userDto = new UserDto() {UserGuid = user.UserGuid, Accounts = new List<Account>() };
             user.AccountGuid.ForEach(guid => userDto.Accounts.Add(LoadMoneyAccount(guid)));
             return userDto;
         }

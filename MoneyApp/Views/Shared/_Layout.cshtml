@@ -75,29 +75,33 @@
         .input[type="datetime-local"] {
             color: grey;
         }
-        
     </style>
 
 
-<br />
-    
+    <br />
 
 
-<div class="loginBox">
-    <div class="navbar-header">
-        @if (isLoggedIn == "true")
-        {
-            <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Logout</a>
-            <a class="navbar-brand" asp-controller="UI" asp-action="LoadOverview">Accounts</a>
-        }
-        @if (isLoggedIn == "false")
-        {
-            <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Login</a>
-            <a class="navbar-brand" asp-controller="UI" asp-action="LoadRegisterUserView">Register</a>
-        }
+
+    <div class="loginBox">
+        <div class="navbar-header">
+            @if (isLoggedIn == "true")
+            {
+                <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Logout</a>
+                <a class="navbar-brand" asp-controller="UI" asp-action="LoadOverview">Accounts</a>
+                <a class="navbar-brand" asp-controller="UI" asp-action="LoadTransactionView">Transactions</a>
+            }
+            @if (isLoggedIn == "false")
+            {
+                <a class="navbar-brand" asp-controller="UI" asp-action="LoadLoginView">Login</a>
+                <a class="navbar-brand" asp-controller="UI" asp-action="LoadRegisterUserView">Register</a>
+            }
+
+            
+        </div>
+@RenderBody()
+
+
     </div>
-    @RenderBody()
-</div>
 
     @*<div class="container">
             <div class="jumbotron">
